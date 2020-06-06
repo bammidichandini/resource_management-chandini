@@ -16,11 +16,13 @@ from resource_management.exceptions.exceptions import(
 from resource_management.dtos.dtos import (
     RequestsDto,
     RequestsUpdateDto,
+    getuserrequestsdto,
     IndividualUserRequestsDto,
     CreateUserRequestsDto,
     GetUserRequestsDto
     )
 from resource_management.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from resource_management.constants.enums import RequestStatus
 from resource_management.interactors.storages.requests_storage_interface \
     import StorageInterface
@@ -77,12 +79,15 @@ class StorageImplementation(StorageInterface):
         request_ids_list: List[int],
         reason: str
         ):
+
         if status == "Accepted":
             status = RequestStatus.Accepted.value
         elif status == "Rejected":
             status = RequestStatus.Rejected.value
 
         requests = Request.objects.filter(id__in=request_ids_list)
+        if len(requests) == 0:
+            raise ObjectDoesNotExist
         requests.update(status=status,reason=reason)
         list_levels = []
         for request in requests:
@@ -94,14 +99,13 @@ class StorageImplementation(StorageInterface):
 
     def get_individual_user_details_to_admin(self, user_id: int):
 
-        queryset = Item.objects.prefetch_related('resource__name')
-        user_items = UserAccess.objects.filter(user_id=user_id).prefetch_related(Prefetch('item',queryset=queryset)).\
+        user_items = Request.objects.filter(user_id=user_id).prefetch_related('item','resource').\
             values(
                 'user__name',
                 'user__department',
                 'user__job_role',
                 'user__profile_pic',
-                'item__resource__name',
+                'resource__name',
                 'item__name',
                 'access_level',
                 'item__description',
@@ -115,7 +119,7 @@ class StorageImplementation(StorageInterface):
                     department=item["user__department"],
                     job_role=item["user__job_role"],
                     profile_pic=item["user__profile_pic"],
-                    resource_name=item["item__resource__name"],
+                    resource_name=item["resource__name"],
                     item_name=item["item__name"],
                     access_level=item["access_level"],
                     description=item["item__description"],
@@ -132,13 +136,18 @@ class StorageImplementation(StorageInterface):
         ):
             resource = Resource.objects.get(name=update_dto.resource_name)
             item = Item.objects.get(resource=resource,name=update_dto.item_name)
-            Request.objects.filter(id=request_id).update(
+            request = Request.objects.filter(id=request_id)
+            if len(request):
+                raise ObjectDoesNotExist
+
+            request.update(
                     resource=resource,
                     item=item,
                     user_id=user_id,
                     duration=update_dto.duedatetime,
                     reason=update_dto.access_reason,
-                    remarks=update_dto.remarks
+                    remarks=update_dto.remarks,
+                    access_llevel=update_dto.access_level
                 )
 
             UserAccess.objects.filter(item=item,resource=resource,user_id=user_id).update(
@@ -150,7 +159,10 @@ class StorageImplementation(StorageInterface):
 
     def delete_user_request(self, user_id: int, request_id: int):
 
-        Request.objects.filter(id=request_id).delete()
+        request = Request.objects.filter(id=request_id)
+        if len(request) == 0:
+            raise ObjectDoesNotExist
+        request.delete()
 
 
     def create_new_user_request(
@@ -166,6 +178,7 @@ class StorageImplementation(StorageInterface):
             user_id=user_id,
             duration=request_dto.duedatetime,
             reason=request_dto.access_reason,
+            access_level=request_dto.access_level
             )
         UserAccess.objects.create(
             item=item,
@@ -174,31 +187,45 @@ class StorageImplementation(StorageInterface):
             )
 
 
-    def get_user_requests(self, user_id: int) -> List[GetUserRequestsDto]:
+    def get_user_requests(self, user_id: int,
+    offset, limit
+    ) -> getuserrequestsdto:
 
+        count = Request.objects.filter(user_id=user_id).count()
         user_requests = Request.objects.filter(user_id=user_id).\
             values(
+                'id',
                 'item__name',
                 'resource__name',
                 'status',
-                'item__useraccess__access_level'
-            )
+                'access_level'
+            )[offset:offset+limit]
         user_dto = []
         for user_request in user_requests:
             user_dto.append(GetUserRequestsDto(
+                id=user_request["id"],
                 item_name=user_request['item__name'],
                 resource_name=user_request['resource__name'],
                 status=user_request['status'],
-                access_level=user_request['item__useraccess__access_level']
+                access_level=user_request['access_level']
                 ))
-        return user_dto
+        request_dto = getuserrequestsdto(
+            count=count,
+            requests=user_dto
+            )
+        return request_dto
 
-    def check_for_valid_input(self, list_ids: List[int]):
-        for ids in list_ids:
-            invalid_id = ids <= 0
-            if invalid_id :
+    def check_for_valid_input(self, list_ids: List[int]) -> bool:
+        for id in list_ids:
+            if id <= 0 :
                 return False
+        return True
 
     def is_admin(self, user_id: int) -> bool:
         is_admin = User.objects.get(id=user_id).is_admin
         return is_admin
+
+    def check_for_valid_offset(self, offset):
+        if offset < 0:
+            return False
+        return True

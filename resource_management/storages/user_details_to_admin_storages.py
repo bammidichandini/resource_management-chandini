@@ -16,6 +16,7 @@ class StorageImplementation(StorageInterface):
       list_of_user_dtos = []
       for user in users:
         list_of_user_dtos.append(RegisterUserDto(
+                                    id=user.id,
                                     person_name=user.name,
                                     department=user.department,
                                     job_role=user.job_role,

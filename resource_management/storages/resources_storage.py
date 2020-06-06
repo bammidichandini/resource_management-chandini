@@ -1,6 +1,7 @@
 from typing import List
 from resource_management.models import Resource, User, Item, UserAccess
-from resource_management.dtos.dtos import ResourceDto, ItemDto
+from resource_management.dtos.dtos import ResourceDto, ItemDto, Itemdto
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Prefetch
 from resource_management.interactors.storages.resources_storage_interface import \
     StorageInterface
@@ -63,9 +64,12 @@ class StorageImplementation(StorageInterface):
         is_admin = self.is_admin_or_user(user_id=user_id)
         if is_admin:
 
-            Resource.objects.filter(
+           resources =  Resource.objects.filter(
                 id=resource_id
-                ).update(
+                )
+           if len(resources) == 0:
+               raise ObjectDoesNotExist
+           resources.update(
                     image_url=resource_dto.image_url,
                     name=resource_dto.name,
                     item_name=resource_dto.item_name,
@@ -83,7 +87,10 @@ class StorageImplementation(StorageInterface):
         is_admin = self.is_admin_or_user(user_id=user_id)
 
         if is_admin:
-            Resource.objects.filter(id__in=resource_ids_list).delete()
+            resources = Resource.objects.filter(id__in=resource_ids_list)
+            if len(resources) == 0:
+                raise ObjectDoesNotExist
+            resources.delete()
 
         else:
             raise UserCannotManipulateException
@@ -94,25 +101,35 @@ class StorageImplementation(StorageInterface):
         return is_admin
 
 
-    def get_user_resources(self, user_id: int) -> List[ItemDto]:
+    def get_user_resources(self, user_id: int) -> List[Itemdto]:
 
         queryset = Item.objects.prefetch_related('resource')
         items = UserAccess.objects.filter(user_id=user_id).\
             prefetch_related(Prefetch('item',queryset=queryset)).\
             values(
+                'item__id',
                 'item__resource__name',
                 'item__name',
                 'access_level',
-                'item__link',
-                'item__description'
+                'item__link'
                 )
-        items_list = []
+        items_dict = {}
         for item in items:
-            items_list.append(ItemDto(
-                item_name=item["item__name"],
-                link=item["item__link"],
-                resource_name=item["item__resource__name"],
-                description=item["item__description"],
+            sub_dict = {
+                "resource_name": item["item__resource__name"],
+                "item_name": item["item__name"],
+                "access_level": item["access_level"],
+                "link": item["item__link"]
+            }
+            items_dict[item["item__id"]] = sub_dict
+
+        items_list = []
+        for key,item in items_dict.items():
+            items_list.append(Itemdto(
+                id=key,
+                item_name=item["item_name"],
+                link=item["link"],
+                resource_name=item["resource_name"],
                 access_level=item["access_level"]
                 ))
         return items_list
@@ -121,6 +138,11 @@ class StorageImplementation(StorageInterface):
         for id in list_ids:
             if id <= 0 :
                 return False
+
+    def check_for_valid_offset(self, offset):
+        if offset < 0:
+            return False
+        return True
 
     def is_admin(self, user_id: int) -> List[int]:
         is_admin = User.objects.get(id=user_id).is_admin

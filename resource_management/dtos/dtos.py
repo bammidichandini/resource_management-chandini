@@ -21,6 +21,14 @@ class ItemDto:
     description: str
 
 @dataclass
+class Itemdto:
+    id: int
+    item_name: str
+    link: str
+    resource_name: str
+    access_level: str
+
+@dataclass
 class userdto:
     id: Optional[int]
     person_name: str
@@ -56,7 +64,7 @@ class RequestsUpdateDto:
 
 @dataclass
 class itemdto:
-    item_id: Optional[int]
+    id: Optional[int]
     item_name: str
     link: str
     description: str
@@ -130,3 +138,7 @@ class GetUserRequestsDto:
     access_level: AccessLevel
     status: RequestStatus
 
+@dataclass
+class getuserrequestsdto:
+    count: int
+    requests: List[GetUserRequestsDto]

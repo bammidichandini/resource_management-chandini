@@ -5,6 +5,7 @@ from resource_management.exceptions.exceptions import (
     InvalidIdException
     )
 from resource_management.dtos.dtos import RequestsUpdateDto
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class UpdateUserRequestInteractor:
@@ -27,11 +28,13 @@ class UpdateUserRequestInteractor:
         invalid_input = not valid_input
         if invalid_input:
             self.presenter.raise_invalid_id_exception()
-
-        self.storage.update_user_request(
-                user_id=user_id,
-                request_id=request_id,
-                update_dto=update_dto
-            )
+        try:
+            self.storage.update_user_request(
+                    user_id=user_id,
+                    request_id=request_id,
+                    update_dto=update_dto
+                )
+        except ObjectDoesNotExist:
+            self.presenter.raise_invalid_id_exception()
 
 

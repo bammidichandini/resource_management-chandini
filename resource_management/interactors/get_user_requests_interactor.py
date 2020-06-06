@@ -11,14 +11,23 @@ class GetUserRequestsInteractor:
         self.storage = storage
         self.presenter = presenter
 
-    def get_user_requests_interactor(self, user_id: int):
+    def get_user_requests_interactor(self, user_id: int, offset, limit):
 
-        try:
-            user_dto = self.storage.get_user_requests(user_id=user_id)
+        list_ids = [limit]
 
-        except InvalidDetailsException:
-            self.presenter.raise_invalid_details_exception()
+        valid_input = self.storage.check_for_valid_input(list_ids)
+        invalid_input = not valid_input
 
-        response = self.presenter.get_user_requests_response(user_dto)
+        valid_offset = self.storage.check_for_valid_offset(offset)
+        invalid_offset = not valid_offset
+
+        if invalid_offset or invalid_input:
+            self.presenter.raise_invalid_id_exception()
+
+
+
+        user_dto = self.storage.get_user_requests(user_id=user_id, offset=offset, limit=limit)
+
+        response = self.presenter.get_user_requests_response(user_dto=user_dto)
 
         return response

@@ -3,7 +3,7 @@
 APP_NAME = "resource_management"
 OPERATION_NAME = "RequestedUserDetails"
 REQUEST_METHOD = "get"
-URL_SUFFIX = "all/registered/users/"
+URL_SUFFIX = "users/myrequests/"
 
 from .test_case_01 import TestCase01RequestedUserDetailsAPITestCase
 

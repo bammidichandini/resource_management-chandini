@@ -19,6 +19,10 @@ class StorageImplementation(StorageInterface):
         except User.DoesNotExist:
             raise InvalidUserException
 
+    def check_for_valid_offset(self, offset):
+        if offset < 0:
+            return False
+        return True
 
     def validate_password(self,
                           username: str,

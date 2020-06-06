@@ -1,5 +1,6 @@
 from typing import List
 from resource_management.dtos.dtos import ItemDto
+from django.core.exceptions import ObjectDoesNotExist
 from resource_management.interactors.storages.item_storages import StorageInterface
 from resource_management.interactors.presenters.presenter_interface import PresenterInterface
 from resource_management.exceptions.exceptions import (
@@ -28,10 +29,13 @@ class DeleteItemsInteractor:
         is_admin = self.storage.is_admin(user_id)
 
         if is_admin:
-            self.storage.delete_items(
-                user_id=user_id,
-                item_ids_list=item_ids_list
-                )
+            try:
+                self.storage.delete_items(
+                    user_id=user_id,
+                    item_ids_list=item_ids_list
+                    )
+            except ObjectDoesNotExist:
+                self.presenter.raise_invalid_id_exception()
         else:
             self.presenter.raise_user_cannot_manipulate_exception()
 

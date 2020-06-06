@@ -11,8 +11,7 @@ class Item(models.Model):
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
     user = models.ManyToManyField(
         "User",
-        through="UserAccess",
-        related_name="user_access_level")
+        through="Request")
 
 
 class UserAccess(models.Model):
@@ -45,5 +44,10 @@ class Request(models.Model):
                               choices=status_choices
                               )
     remarks = models.CharField(max_length=200,default=None,null=True)
+    access_choices = (
+        (AccessLevel.Read.value, AccessLevel.Read.value),
+        (AccessLevel.Write.value, AccessLevel.Write.value),
+        (AccessLevel.Read_and_Write.value, AccessLevel.Read_and_Write.value)
+        )
 
     access_level = models.CharField(max_length=50, choices=access_choices,null=True)

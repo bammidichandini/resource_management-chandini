@@ -42,12 +42,8 @@ def api_wrapper(*args, **kwargs):
 
     request_data = kwargs['request_data']
     status = request_data["status"]
-    reason = request_data["reason"]
+    reason = request_data["rejection_reason"]
     request_ids_list = request_data["request_ids_list"]
-
-    print("*"* 100)
-    print(request_data.__dict__)
-    print("*"* 100)
 
     storage = StorageImplementation()
     presenter = PresenterImplementation()

@@ -5,11 +5,16 @@ from common.dtos import UserAuthTokensDTO
 from resource_management.dtos.dtos import (
     ResourceDto,
     ItemDto,
+    Itemdto,
     CreateUserRequestsDto
     )
 
 
 class StorageInterface(ABC):
+
+    @abstractmethod
+    def check_for_valid_offset(self, offset):
+       pass
 
     @abstractmethod
     def create_resource(self,
@@ -39,7 +44,7 @@ class StorageInterface(ABC):
     def get_user_resources(
         self,
         user_id: int
-        ) -> List[ItemDto]:
+        ) -> List[Itemdto]:
         pass
 
     @abstractmethod

@@ -1,5 +1,6 @@
 from resource_management.interactors.storages.requests_storage_interface import StorageInterface
 from resource_management.interactors.presenters.presenter_interface import PresenterInterface
+from django.core.exceptions import ObjectDoesNotExist
 from resource_management.exceptions.exceptions import InvalidIdException
 
 
@@ -23,5 +24,9 @@ class DeleteUserRequestInteractor:
         if invalid_input:
             self.presenter.raise_invalid_id_exception()
 
-        self.storage.delete_user_request(user_id=user_id, request_id=request_id)
+        try:
+            self.storage.delete_user_request(user_id=user_id, request_id=request_id)
+        except ObjectDoesNotExist:
+            self.presenter.raise_invalid_id_exception()
+
 

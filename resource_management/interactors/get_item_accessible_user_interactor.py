@@ -16,12 +16,16 @@ class GetUsersForItems:
                                        offset: int,
                                        limit: int
                                        ):
-        item_ids_list = [item_id,offset,limit]
+        item_ids_list = [item_id,limit]
         valid_input = self.storage.check_for_valid_input(item_ids_list)
+
+        valid_offset = self.storage.check_for_valid_offset(offset)
+
+        invalid_offset = not valid_offset
 
         invalid_input = not valid_input
 
-        if invalid_input:
+        if invalid_input or invalid_offset:
             self.presenter.raise_invalid_id_exception()
 
         list_of_user_dto = self.storage.get_users_for_items(

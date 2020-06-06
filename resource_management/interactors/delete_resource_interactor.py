@@ -3,6 +3,7 @@ from resource_management.exceptions.exceptions import (
     UserCannotManipulateException,
     InvalidIdException
     )
+from django.core.exceptions import ObjectDoesNotExist
 from resource_management.interactors.storages.resources_storage_interface import StorageInterface
 from resource_management.interactors.presenters.presenter_interface import PresenterInterface
 
@@ -27,9 +28,12 @@ class DeleteResourcesInteractor:
 
         is_admin = self.storage.is_admin(user_id)
         if is_admin:
-            self.storage.delete_resources(
-                user_id=user_id,
-                resource_ids_list=resource_ids_list
-                )
+            try:
+                self.storage.delete_resources(
+                    user_id=user_id,
+                    resource_ids_list=resource_ids_list
+                    )
+            except ObjectDoesNotExist:
+                self.presenter.raise_invalid_id_exception()
         else:
             self.presenter.raise_user_cannot_manipulate_exception()

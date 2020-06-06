@@ -81,6 +81,7 @@ def resource_dto():
 @pytest.fixture()
 def resource_dtos():
     resource_dtos = ResourceDto(
+        id=1,
         image_url="aws/cloud/aws.png",
         name= "aws",
         item_name= "cloud_services",
@@ -95,8 +96,7 @@ def item_dto():
         item_name="cloud",
         link="https://www.aws.in/cloud_services",
         resource_name="aws",
-        description="service provided by aws",
-        access_level=AccessLevel.Read.value
+        description="service provided by aws"
         )
     return items_dto
 
@@ -106,8 +106,7 @@ def items_dto():
         item_name="cloud",
         link="https://www.aws.in/cloud_services",
         resource_name="aws",
-        description="service provided by aws",
-        access_level=AccessLevel.Read.value
+        description="service provided by aws"
         )]
     return items_dto
 
@@ -115,6 +114,7 @@ def items_dto():
 @pytest.fixture()
 def get_resource():
     resource_dict = [{
+        "id": 1,
         "image_url":"aws/cloud/aws.png",
         "name": "aws",
         "item_name": "cloud_services",

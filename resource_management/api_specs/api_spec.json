@@ -100,7 +100,14 @@
                 "user_id": {
                     "type": "string"
                 }
-            }
+            },
+            "required": [
+                "person_name",
+                "job_role",
+                "department",
+                "profile_pic",
+                "user_id"
+            ]
         },
         "GetUserRequestsAdmin": {
             "allOf": [{
@@ -446,7 +453,54 @@
                 "url"
             ]
         },
+        "usermyrequests": {
+            "type": "object",
+            "properties": {
+                "resource_name": {
+                    "type": "string"
+                },
+                "item_name": {
+                    "type": "string"
+                },
+                "access_level": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "status": {
+                    "type": "string"
+                }
 
+            },
+            "required": [
+                "resource_name",
+                "item_name",
+                "access_level",
+                "id",
+                "status"
+            ]
+        },
+        "UserMyRequests": {
+            "allOf": [{
+                    "$ref": "#/definitions/total_count"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "array",
+                            "items": {
+
+                                "$ref": "#/definitions/usermyrequests"
+
+                            }
+                        }
+                    }
+                }
+            ]
+        },
         "UserResource": {
 
             "type": "object",
@@ -894,27 +948,7 @@
         "RequestUserDetailsResponse": {
             "description": "Success Response",
             "schema": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "person_name": {
-                            "type": "string"
-                        },
-                        "department": {
-                            "type": "string"
-                        },
-                        "job_role": {
-                            "type": "string"
-                        },
-                        "url": {
-                            "type": "string"
-                        },
-                        "profile_pic": {
-                            "type": "string"
-                        }
-                    }
-                }
+                "$ref": "#/definitions/UserMyRequests"
             }
         }
     },
@@ -1102,8 +1136,7 @@
                 "description": "deletes an existing resource",
                 "security": [{
                     "oauth": [
-                        "write",
-                        "read"
+                        "delete"
                     ]
                 }],
                 "parameters": [{
@@ -1205,8 +1238,7 @@
                 "description": "it delete items",
                 "security": [{
                     "oauth": [
-                        "write",
-                        "read"
+                        "delete"
                     ]
                 }],
                 "parameters": [{
@@ -1425,8 +1457,7 @@
                 "description": "User delete requested item",
                 "security": [{
                     "oauth": [
-                        "read",
-                        "write"
+                        "delete"
                     ]
                 }],
                 "parameters": [{
@@ -1446,11 +1477,11 @@
                 }
             }
         },
-        "/all/registered/users/": {
+        "/individual/user/items/": {
             "get": {
-                "operationId": "RequestedUserDetails",
-                "summary": "User delete request",
-                "description": "User delete requested item",
+                "operationId": "Userrelateditems",
+                "summary": "Items of related user",
+                "description": "User related",
                 "security": [{
                     "oauth": [
                         "read",
@@ -1458,6 +1489,37 @@
                     ]
                 }],
                 "parameters": [],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/UserRequestsResponse"
+                    }
+                }
+            }
+        },
+        "/users/myrequests/": {
+            "get": {
+                "operationId": "RequestedUserDetails",
+                "summary": "User requests",
+                "description": "User requests",
+                "security": [{
+                    "oauth": [
+                        "read",
+                        "write"
+                    ]
+                }],
+                "parameters": [{
+                        "name": "offset",
+                        "in": "query",
+                        "description": "Some description for offset",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Some description for limit",
+                        "type": "integer"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "$ref": "#/responses/RequestUserDetailsResponse"

@@ -7,7 +7,7 @@ from resource_management.models.resource \
 
 class User(AbstractUser):
     name = models.CharField(max_length=50)
-    profile_pic = models.CharField(max_length=50)
+    profile_pic = models.URLField(max_length=200)
     email = models.EmailField(max_length=250, default=None, null=True)
     is_admin = models.BooleanField(default=False)
 

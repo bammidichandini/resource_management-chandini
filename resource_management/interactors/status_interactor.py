@@ -7,6 +7,7 @@ from resource_management.interactors.storages.requests_storage_interface \
     import StorageInterface
 from resource_management.interactors.presenters.presenter_interface \
     import PresenterInterface
+from django.core.exceptions import ObjectDoesNotExist
 
 
 
@@ -29,9 +30,11 @@ class StatusInteractor:
         invalid_input = not valid_input
         if invalid_input:
             self.presenter.raise_invalid_id_exception()
-
-        self.storage.set_status(status=status,
+        try:
+            self.storage.set_status(status=status,
                                     reason=reason,
                                     request_ids_list=request_ids_list
                                     )
+        except ObjectDoesNotExist:
+            self.presenter.raise_invalid_id_exception()
 

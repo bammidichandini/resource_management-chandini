@@ -13,6 +13,10 @@ from resource_management.dtos.dtos import (
 class StorageInterface(ABC):
 
     @abstractmethod
+    def check_for_valid_offset(self, offset):
+       pass
+
+    @abstractmethod
     def create_item(
         self,
         item_dto: ItemDto,

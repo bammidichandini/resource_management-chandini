@@ -9,11 +9,13 @@ from resource_management.dtos.dtos import (
     ResourceDto,
     RequestsDto,
     UserDto,
+    Itemdto,
     RegisterUserDto,
     IndividualUserRequestsDto,
     ItemDto,
     ResourceItemDto,
     GetUserRequestsDto,
+    getuserrequestsdto,
     ResourceItemParametersDto
     )
 
@@ -108,6 +110,7 @@ class PresenterImplementation(PresenterInterface):
         for item_dto in item_dtos:
 
             items_dict_list.append( {
+            "id": item_dto.id,
             "item_name": item_dto.item_name ,
             "link": item_dto.link,
             "description": item_dto.description,
@@ -180,10 +183,11 @@ class PresenterImplementation(PresenterInterface):
         for dto in user_dto:
             users_dict_list.append(
                 {
+                "user_id": dto.id,
                 "person_name": dto.person_name,
                 "job_role": dto.job_role,
                 "department": dto.department,
-                "url": dto.url
+                "profile_pic": dto.url
             })
         return users_dict_list
 
@@ -208,32 +212,38 @@ class PresenterImplementation(PresenterInterface):
                 )
         return list_of_users
 
-    def get_user_resources_response(self, items_dto: List[ItemDto]):
+    def get_user_resources_response(self, items_dto: List[Itemdto]):
         items_list = []
         for item in items_dto:
             items_list.append(
                 {
+                    "id":item.id,
                     "resource_name": item.resource_name,
                     "item_name": item.item_name,
                     "link": item.link,
-                    "description": item.description,
                     "access_level": item.access_level
                 }
                 )
         return items_list
 
 
-    def get_user_requests_response(self, user_dto: GetUserRequestsDto):
+    def get_user_requests_response(self, user_dto: getuserrequestsdto):
         request_dict_list = []
-        for request_dto in user_dto:
+        requests = user_dto.requests
+        for request_dto in requests:
             request_dict_list.append(
                 {
+                    "id": request_dto.id,
                     "item_name": request_dto.item_name,
                     "resource_name": request_dto.resource_name,
                     "status": request_dto.status,
                     "access_level": request_dto.access_level
                 }
                 )
-        return request_dict_list
+        result_dict = {
+            "total_count": user_dto.count,
+            "requests": request_dict_list
+        }
+        return result_dict
 
 

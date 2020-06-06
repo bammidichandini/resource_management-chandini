@@ -20,6 +20,7 @@ from resource_management.models.item import (
     Request
     )
 from django.db.models import Prefetch
+from django.core.exceptions import ObjectDoesNotExist
 from resource_management.interactors.storages.item_storages import \
     StorageInterface
 from resource_management.exceptions.exceptions import(
@@ -58,7 +59,11 @@ class StorageImplementation(StorageInterface):
         user_id: int
         ):
 
-        Item.objects.filter(id__in=item_ids_list).delete()
+        items = Item.objects.filter(id__in=item_ids_list)
+        if len(items):
+            raise ObjectDoesNotExist
+
+        items.delete()
 
 
     def update_item(
@@ -68,16 +73,20 @@ class StorageImplementation(StorageInterface):
         user_id: int
         ):
         resource = Resource.objects.get(name=item_dto.resource_name)
-        Item.objects.filter(
+        items = Item.objects.filter(
             id=item_id
-            ).update(
+            )
+        if len(items):
+            raise ObjectDoesNotExist
+
+        items.update(
                 name=item_dto.item_name,
                 link=item_dto.link,
                 resource=resource,
                 description=item_dto.description
                 )
-        # UserAccess.objects.filter(item_id=item_id, user_id=user_id).\
-        #     update(access_level=item_dto.access_level)
+        UserAccess.objects.filter(item_id=item_id, user_id=user_id).\
+            update(access_level=item_dto.access_level)
 
 
     def is_admin(self, user_id: int) -> List[int]:
@@ -110,7 +119,7 @@ class StorageImplementation(StorageInterface):
         for item_obj in item_objs:
             item_dto_list.append(
                 itemdto(
-                item_id=item_obj.id,
+                id=item_obj.id,
                 item_name=item_obj.name,
                 link=item_obj.link,
                 description=item_obj.description
@@ -136,6 +145,7 @@ class StorageImplementation(StorageInterface):
         ) -> List[UserDto]:
 
         item = Item.objects.get(id=item_id)
+        #userobjects = Request.objects.filter(item_id=item_id).values('')
         count = len(list(UserAccess.objects.prefetch_related('user').filter(item_id=item.id).\
             values('access_level','user__username','user__department','user__job_role')))
         userobjects = UserAccess.objects.prefetch_related('user').filter(item_id=item.id).\
@@ -156,63 +166,24 @@ class StorageImplementation(StorageInterface):
             )
         return user_dto
 
-    # def get_requests(self) -> List[RequestsDto]:
 
-    #     # queryset = Item.objects.prefetch_related('resource__name','user','access_level')
-    #     # requests = Request.objects.prefetch_related(Prefetch('item',queryset=queryset)).\
-    #     #             values_list('item__user__username',
-    #     #                         'item__name',
-    #     #                         'item__useraccess__access_level',
-    #     #                         'item__resource__name',
-    #     #                         'duration',
-    #     #                         'id',
-    #     #                         'item__resource__image_url'
-    #     #                         )
-    #     requests = Request.objects.all().\
-    #                 values_list('item__user__username',
-    #                             'item__name',
-    #                             'item__useraccess__access_level',
-    #                             'item__resource__name',
-    #                             'duration',
-    #                             'id',
-    #                             'item__resource__image_url'
-    #                             )
-
-
-    #     list_of_requests = []
-    #     for request in requests:
-    #         list_of_requests.append(
-    #             RequestsDto(
-    #                 id = request[5],
-    #                 name=request[0],
-    #                 access_level=request[2],
-    #                 duedatetime=request[4],
-    #                 resource_name=request[3],
-    #                 item_name=request[1],
-    #                 url=request[6]
-    #                 )
-    #             )
-    #     return list_of_requests
     def get_requests(self) -> List[RequestsDto]:
 
-        queryset = Item.objects.prefetch_related('user','access_level')
-        requests = Request.objects.prefetch_related('user','resource',Prefetch('item',queryset=queryset)).\
+        requests = Request.objects.all().\
                     values('user__username',
                                 'item__name',
-                                'item__useraccess__access_level'
                                 'resource__name',
                                 'duration',
                                 'id',
-                                'user__profile_pic'
+                                'user__profile_pic',
+                                'access_level'
                                 )
-
-        requests = UserAccess.objects.all().values('access_level','item__')
         request_dict = {}
         for request in requests:
             sub_dict = {
                 "name": request["user__username"],
-                "access_level": request["item__useraccess__access_level"],
-                "duedatetime": request["duedatetime"],
+                "access_level": request["access_level"],
+                "duedatetime": request["duration"],
                 "resource_name": request["resource__name"],
                 "item_name": request["item__name"],
                 "url": request["user__profile_pic"]
@@ -230,7 +201,7 @@ class StorageImplementation(StorageInterface):
                     access_level=request["access_level"],
                     duedatetime=request["duedatetime"],
                     resource_name=request["resource_name"],
-                    item_name=request["item__name"],
+                    item_name=request["item_name"],
                     url=request["url"]
                     )
                 )
@@ -240,4 +211,9 @@ class StorageImplementation(StorageInterface):
         for id in list_ids:
             if id <= 0 :
                 return False
+        return True
+
+    def check_for_valid_offset(self, offset):
+        if offset < 0:
+            return False
         return True

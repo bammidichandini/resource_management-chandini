@@ -6,6 +6,7 @@ from resource_management.exceptions.exceptions import (
     InvalidIdException
     )
 from resource_management.dtos.dtos import ResourceDto
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class UpdateResourceInteractor:
@@ -31,10 +32,13 @@ class UpdateResourceInteractor:
         is_admin = self.storage.is_admin(user_id)
 
         if is_admin:
-            self.storage.update_resource(
-                resource_id=resource_id,
-                resource_dto=resource_dto,
-                user_id=user_id
-                )
+            try:
+                self.storage.update_resource(
+                    resource_id=resource_id,
+                    resource_dto=resource_dto,
+                    user_id=user_id
+                    )
+            except ObjectDoesNotExist:
+                self.presenter.raise_invalid_id_exception()
         else:
             self.presenter.raise_user_cannot_manipulate_exception()

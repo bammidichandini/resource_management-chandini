@@ -9,7 +9,9 @@ from resource_management.dtos.dtos import (
     ResourceItemDto,
     UserDto,
     RegisterUserDto,
+    Itemdto,
     IndividualUserRequestsDto,
+    getuserrequestsdto,
     ItemDto,
     GetUserRequestsDto
     )
@@ -68,7 +70,8 @@ class PresenterInterface(ABC):
     @abstractmethod
     def get_requests_response(
         self,
-        request_dto: List[RequestsDto]
+        request_dto: List[RequestsDto],
+
         ):
         pass
 
@@ -98,9 +101,9 @@ class PresenterInterface(ABC):
         pass
 
     @abstractmethod
-    def get_user_resources_response(self, items_dto: List[ItemDto]):
+    def get_user_resources_response(self, items_dto: List[Itemdto]):
         pass
 
     @abstractmethod
-    def get_user_requests_response(self, user_dto: GetUserRequestsDto):
+    def get_user_requests_response(self, user_dto: getuserrequestsdto):
         pass
