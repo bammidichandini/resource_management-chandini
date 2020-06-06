@@ -103,34 +103,16 @@ class StorageImplementation(StorageInterface):
 
     def get_user_resources(self, user_id: int) -> List[Itemdto]:
 
-        queryset = Item.objects.prefetch_related('resource')
-        items = UserAccess.objects.filter(user_id=user_id).\
-            prefetch_related(Prefetch('item',queryset=queryset)).\
-            values(
-                'item__id',
-                'item__resource__name',
-                'item__name',
-                'access_level',
-                'item__link'
-                )
-        items_dict = {}
-        for item in items:
-            sub_dict = {
-                "resource_name": item["item__resource__name"],
-                "item_name": item["item__name"],
-                "access_level": item["access_level"],
-                "link": item["item__link"]
-            }
-            items_dict[item["item__id"]] = sub_dict
+        items = Item.objects.filter(user_id=user_id).prefetch_related('resource','useraccess')
 
         items_list = []
-        for key,item in items_dict.items():
+        for item in items:
             items_list.append(Itemdto(
-                id=key,
-                item_name=item["item_name"],
-                link=item["link"],
-                resource_name=item["resource_name"],
-                access_level=item["access_level"]
+                id=item.id,
+                item_name=item.name,
+                link=item.link,
+                resource_name=item.resource.name,
+                access_level=item.useraccess.access_level
                 ))
         return items_list
 

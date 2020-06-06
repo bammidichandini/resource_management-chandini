@@ -145,21 +145,18 @@ class StorageImplementation(StorageInterface):
         limit: int
         ) -> List[UserDto]:
 
-        item = Item.objects.get(id=item_id)
-        #userobjects = Request.objects.filter(item_id=item_id).values('')
-        count = len(list(UserAccess.objects.prefetch_related('user').filter(item_id=item.id).\
-            values('access_level','user__username','user__department','user__job_role')))
-        userobjects = UserAccess.objects.prefetch_related('user').filter(item_id=item.id).\
-            values('access_level','user__username','user__department','user__job_role','user__id')[offset:offset+limit]
+        items = Item.objects.filter(id=item_id)
+        count = items.count()
+        userobjects = items.prefetch_related('user')
         list_of_dtos = []
         for user_obj in userobjects:
             list_of_dtos.append(
                 userdto(
-                id=user_obj['user__id'],
-                person_name=user_obj['user__username'],
-                department=user_obj['user__department'],
-                job_role=user_obj['user__job_role'],
-                access_level=user_obj['access_level']
+                id=user_obj.user.id,
+                person_name=user_obj.user.username,
+                department=user_obj.user.department,
+                job_role=user_obj.user.job_role,
+                access_level=user_obj.access_level
                 ))
         user_dto = UserDto(
             count=count,
@@ -171,10 +168,6 @@ class StorageImplementation(StorageInterface):
     def get_requests(self) -> List[RequestsDto]:
 
         requests = Request.objects.filter(status=RequestStatus.Pending.value).prefetch_related('user','item','resource')
-
-        print("*"*100)
-        print(requests)
-        print("*"*100)
         list_of_requests = []
 
         for request in requests:
