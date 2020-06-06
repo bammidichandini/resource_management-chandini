@@ -31,48 +31,6 @@ from resource_management.interactors.storages.requests_storage_interface \
 class StorageImplementation(StorageInterface):
 
 
-    def get_requests(self) -> List[RequestsDto]:
-
-        queryset = Item.objects.prefetch_related('useraccess')
-        requests = Request.objects.filter(status=RequestStatus.Pending.value).prefetch_related(Prefetch('item',queryset=queryset),'user','resource').\
-                    values('user__username',
-                                'item__name',
-                                'item__useraccess__access_level'
-                                'resource__name',
-                                'duration',
-                                'id',
-                                'user__profile_pic'
-                                )
-        request_dict = {}
-        for request in requests:
-            sub_dict = {
-                "name": request["user__username"],
-                "access_level": request["item__useraccess__access_level"],
-                "duedatetime": request["duedatetime"],
-                "resource_name": request["resource_name"],
-                "item_name": request["item__name"],
-                "url": request["user__profile_pic"]
-            }
-            request_dict[request["id"]] = sub_dict
-
-
-        list_of_requests = []
-
-        for key,request in request_dict.items():
-            list_of_requests.append(
-                RequestsDto(
-                    id = key,
-                    name=request["name"],
-                    access_level=request["access_level"],
-                    duedatetime=request["duedatetime"],
-                    resource_name=request["resource_name"],
-                    item_name=request["item__name"],
-                    url=request["url"]
-                    )
-                )
-        return list_of_requests
-
-
     def set_status(
         self,
         status: str,
@@ -116,9 +74,6 @@ class StorageImplementation(StorageInterface):
             resource = Resource.objects.get(name=update_dto.resource_name)
             item = Item.objects.get(resource=resource,name=update_dto.item_name)
             request = Request.objects.filter(id=request_id)
-            if len(request) == 0:
-                raise ObjectDoesNotExist
-
             request.update(
                     resource=resource,
                     item=item,
@@ -139,8 +94,6 @@ class StorageImplementation(StorageInterface):
     def delete_user_request(self, user_id: int, request_id: int):
 
         request = Request.objects.filter(id=request_id)
-        if len(request) == 0:
-            raise ObjectDoesNotExist
         request.delete()
 
 

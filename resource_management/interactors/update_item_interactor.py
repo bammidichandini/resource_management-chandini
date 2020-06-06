@@ -32,13 +32,10 @@ class UpdateItemInteractor:
         is_admin = self.storage.is_admin(user_id)
 
         if is_admin:
-            try:
                 self.storage.update_item(
                     item_id=item_id,
                     item_dto=item_dto,
                     user_id=user_id
                     )
-            except ObjectDoeNotExist:
-                self.presenter.invalid_id_exception()
         else:
             self.presenter.raise_user_cannot_manipulate_exception()

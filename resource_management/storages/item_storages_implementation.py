@@ -77,8 +77,6 @@ class StorageImplementation(StorageInterface):
         items = Item.objects.filter(
             id=item_id
             )
-        if len(items):
-            raise ObjectDoesNotExist
 
         items.update(
                 name=item_dto.item_name,

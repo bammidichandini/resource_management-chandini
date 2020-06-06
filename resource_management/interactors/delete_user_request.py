@@ -24,9 +24,6 @@ class DeleteUserRequestInteractor:
         if invalid_input:
             self.presenter.raise_invalid_id_exception()
 
-        try:
-            self.storage.delete_user_request(user_id=user_id, request_id=request_id)
-        except ObjectDoesNotExist:
-            self.presenter.raise_invalid_id_exception()
+        self.storage.delete_user_request(user_id=user_id, request_id=request_id)
 
 

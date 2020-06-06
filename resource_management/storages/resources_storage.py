@@ -67,8 +67,6 @@ class StorageImplementation(StorageInterface):
            resources =  Resource.objects.filter(
                 id=resource_id
                 )
-           if len(resources) == 0:
-               raise ObjectDoesNotExist
            resources.update(
                     image_url=resource_dto.image_url,
                     name=resource_dto.name,
@@ -88,8 +86,6 @@ class StorageImplementation(StorageInterface):
 
         if is_admin:
             resources = Resource.objects.filter(id__in=resource_ids_list)
-            if len(resources) == 0:
-                raise ObjectDoesNotExist
             resources.delete()
 
         else:

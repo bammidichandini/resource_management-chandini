@@ -28,13 +28,10 @@ class UpdateUserRequestInteractor:
         invalid_input = not valid_input
         if invalid_input:
             self.presenter.raise_invalid_id_exception()
-        try:
-            self.storage.update_user_request(
+        self.storage.update_user_request(
                     user_id=user_id,
                     request_id=request_id,
                     update_dto=update_dto
                 )
-        except ObjectDoesNotExist:
-            self.presenter.raise_invalid_id_exception()
 
 

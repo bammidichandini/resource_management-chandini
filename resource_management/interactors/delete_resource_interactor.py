@@ -28,12 +28,10 @@ class DeleteResourcesInteractor:
 
         is_admin = self.storage.is_admin(user_id)
         if is_admin:
-            try:
                 self.storage.delete_resources(
                     user_id=user_id,
                     resource_ids_list=resource_ids_list
                     )
-            except ObjectDoesNotExist:
-                self.presenter.raise_invalid_id_exception()
+
         else:
             self.presenter.raise_user_cannot_manipulate_exception()
