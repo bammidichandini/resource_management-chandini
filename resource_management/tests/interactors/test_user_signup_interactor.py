@@ -35,7 +35,7 @@ def test_user_signup(
         )
 
     storage.is_user_exists.return_value = False
-    presenter.get_login_response.return_value = user_auth_tokens_dto
+    presenter.get_signup_response.return_value = user_auth_tokens_dto
 
     storage.create_a_new_user.return_value = user_id
     oauth2_storage.get_or_create_default_application.return_value \
@@ -81,7 +81,7 @@ def test_user_signup_with_existed_user(user_auth_tokens_dto,
         )
 
     storage.is_user_exists.return_value = True
-    presenter.get_login_response.return_value = user_auth_tokens_dto
+    presenter.get_signup_response.return_value = user_auth_tokens_dto
 
     presenter.raise_user_already_existed_exception.side_effect = \
                 UserAlreadyExistedException

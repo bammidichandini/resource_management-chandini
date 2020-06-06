@@ -20,6 +20,7 @@ from resource_management.models.item import (
     Request
     )
 from django.db.models import Prefetch
+from resource_management.constants.enums import RequestStatus
 from django.core.exceptions import ObjectDoesNotExist
 from resource_management.interactors.storages.item_storages import \
     StorageInterface
@@ -60,7 +61,7 @@ class StorageImplementation(StorageInterface):
         ):
 
         items = Item.objects.filter(id__in=item_ids_list)
-        if len(items):
+        if len(items) == 0:
             raise ObjectDoesNotExist
 
         items.delete()
@@ -169,40 +170,23 @@ class StorageImplementation(StorageInterface):
 
     def get_requests(self) -> List[RequestsDto]:
 
-        requests = Request.objects.all().\
-                    values('user__username',
-                                'item__name',
-                                'resource__name',
-                                'duration',
-                                'id',
-                                'user__profile_pic',
-                                'access_level'
-                                )
-        request_dict = {}
-        for request in requests:
-            sub_dict = {
-                "name": request["user__username"],
-                "access_level": request["access_level"],
-                "duedatetime": request["duration"],
-                "resource_name": request["resource__name"],
-                "item_name": request["item__name"],
-                "url": request["user__profile_pic"]
-            }
-            request_dict[request["id"]] = sub_dict
+        requests = Request.objects.filter(status=RequestStatus.Pending.value).prefetch_related('user','item','resource')
 
-
+        print("*"*100)
+        print(requests)
+        print("*"*100)
         list_of_requests = []
 
-        for key,request in request_dict.items():
+        for request in requests:
             list_of_requests.append(
                 RequestsDto(
-                    id = key,
-                    name=request["name"],
-                    access_level=request["access_level"],
-                    duedatetime=request["duedatetime"],
-                    resource_name=request["resource_name"],
-                    item_name=request["item_name"],
-                    url=request["url"]
+                    id = request.id,
+                    name=request.user.username,
+                    access_level=request.access_level,
+                    duedatetime=request.duration,
+                    resource_name=request.resource.name,
+                    item_name=request.item.name,
+                    url=request.user.profile_pic
                     )
                 )
         return list_of_requests

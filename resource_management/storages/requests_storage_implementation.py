@@ -34,7 +34,7 @@ class StorageImplementation(StorageInterface):
     def get_requests(self) -> List[RequestsDto]:
 
         queryset = Item.objects.prefetch_related('useraccess')
-        requests = Request.objects.prefetch_related(Prefetch('item',queryset=queryset),'user','resource').\
+        requests = Request.objects.filter(status=RequestStatus.Pending.value).prefetch_related(Prefetch('item',queryset=queryset),'user','resource').\
                     values('user__username',
                                 'item__name',
                                 'item__useraccess__access_level'
@@ -80,51 +80,30 @@ class StorageImplementation(StorageInterface):
         reason: str
         ):
 
-        if status == "Accepted":
-            status = RequestStatus.Accepted.value
-        elif status == "Rejected":
-            status = RequestStatus.Rejected.value
-
         requests = Request.objects.filter(id__in=request_ids_list)
-        if len(requests) == 0:
-            raise ObjectDoesNotExist
         requests.update(status=status,reason=reason)
-        list_levels = []
-        for request in requests:
-            list_levels.append(UserAccess(
-                item=request.item,
-                user=request.user,
-                access_level=request.access_level))
-        UserAccess.objects.bulk_create(list_levels)
+        if status == "Accepted":
+            for request in requests:
+                UserAccess.objects.create(user=request.user,item=request.item,access_level=request.access_level)
+
+
 
     def get_individual_user_details_to_admin(self, user_id: int):
 
-        user_items = Request.objects.filter(user_id=user_id).prefetch_related('item','resource').\
-            values(
-                'user__name',
-                'user__department',
-                'user__job_role',
-                'user__profile_pic',
-                'resource__name',
-                'item__name',
-                'access_level',
-                'item__description',
-                'item__link'
-                )
+        user_items = Request.objects.filter(user_id=user_id).prefetch_related('item','resource','user')
         items_list = []
-        if not len(user_items) == 0:
-            for item in user_items:
-                items_list.append(IndividualUserRequestsDto(
-                    person_name=item["user__name"],
-                    department=item["user__department"],
-                    job_role=item["user__job_role"],
-                    profile_pic=item["user__profile_pic"],
-                    resource_name=item["resource__name"],
-                    item_name=item["item__name"],
-                    access_level=item["access_level"],
-                    description=item["item__description"],
-                    link=item["item__link"],
-                    ))
+        for item in user_items:
+            items_list.append(IndividualUserRequestsDto(
+                person_name=item.user.name,
+                department=item.user.department,
+                job_role=item.user.job_role,
+                profile_pic=item.user.profile_pic,
+                resource_name=item.resource.name,
+                item_name=item.item.name,
+                access_level=item.access_level,
+                description=item.item.description,
+                link=item.item.link,
+                ))
         return items_list
 
 
@@ -137,7 +116,7 @@ class StorageImplementation(StorageInterface):
             resource = Resource.objects.get(name=update_dto.resource_name)
             item = Item.objects.get(resource=resource,name=update_dto.item_name)
             request = Request.objects.filter(id=request_id)
-            if len(request):
+            if len(request) == 0:
                 raise ObjectDoesNotExist
 
             request.update(
@@ -192,22 +171,15 @@ class StorageImplementation(StorageInterface):
     ) -> getuserrequestsdto:
 
         count = Request.objects.filter(user_id=user_id).count()
-        user_requests = Request.objects.filter(user_id=user_id).\
-            values(
-                'id',
-                'item__name',
-                'resource__name',
-                'status',
-                'access_level'
-            )[offset:offset+limit]
+        user_requests = Request.objects.filter(user_id=user_id).prefetch_related('item','resource')[offset:offset+limit]
         user_dto = []
         for user_request in user_requests:
             user_dto.append(GetUserRequestsDto(
-                id=user_request["id"],
-                item_name=user_request['item__name'],
-                resource_name=user_request['resource__name'],
-                status=user_request['status'],
-                access_level=user_request['access_level']
+                id=user_request.id,
+                item_name=user_request.item.name,
+                resource_name=user_request.resource.name,
+                status=user_request.status,
+                access_level=user_request.access_level
                 ))
         request_dto = getuserrequestsdto(
             count=count,

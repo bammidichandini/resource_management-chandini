@@ -58,13 +58,26 @@ def application_dto():
 @pytest.fixture()
 def user_auth_tokens_dto():
     user_auth_tokens_dto = UserAuthTokensDTO(
-        user_id="chandini",
+        user_id=1,
         access_token="12345",
         refresh_token="56789",
         expires_in=datetime.datetime(2019, 4, 22, 0, 0)
     )
 
     return user_auth_tokens_dto
+
+@pytest.fixture()
+def login_response():
+    response = {
+        "role": True,
+        "access_token": {
+            "user_id": 1,
+            "access_token": "12345",
+            "refresh_token": "56789",
+            "expires_in": datetime.datetime(2019, 4, 22, 0, 0)
+        }
+    }
+    return response
 
 @pytest.fixture()
 def resource_dto():
@@ -342,6 +355,7 @@ def get_user_requests_response():
 @pytest.fixture()
 def request_update_dto():
     response = RequestsUpdateDto(
+        id=1,
         access_level="Write",
         duedatetime=datetime.datetime(2019, 4, 22, 0, 0),
         remarks="accept your access",
@@ -355,6 +369,7 @@ def request_update_dto():
 @pytest.fixture()
 def request_update_dto_invalid_access_level():
     response = RequestsUpdateDto(
+        id=1,
         access_level=1,
         duedatetime=datetime.datetime(2019, 4, 22, 0, 0),
         remarks="accept your access",

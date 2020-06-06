@@ -1136,7 +1136,7 @@
                 "description": "deletes an existing resource",
                 "security": [{
                     "oauth": [
-                        "delete"
+                        "write"
                     ]
                 }],
                 "parameters": [{
@@ -1232,13 +1232,14 @@
             }
         },
         "/delete/items/": {
-            "delete": {
+            "post": {
                 "operationId": "delete_item",
                 "summary": "delete_item",
                 "description": "it delete items",
                 "security": [{
                     "oauth": [
-                        "delete"
+                        "write",
+                        "read"
                     ]
                 }],
                 "parameters": [{

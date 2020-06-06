@@ -16,12 +16,14 @@ import pytest
 def test_login(user_auth_tokens_dto,
                access_dto,
                refresh_token_dto,
-               application_dto
+               application_dto,
+               login_response
                ):
 
     #arrange
     username = "chandini"
     password = "chandini"
+    role = True
     user_id = 1
 
     storage = create_autospec(StorageImplementation)
@@ -33,7 +35,8 @@ def test_login(user_auth_tokens_dto,
         oauth2_storage=oauth2_storage,
         presenter=presenter
         )
-    presenter.get_login_response.return_value = user_auth_tokens_dto
+
+    presenter.get_login_response.return_value = login_response
 
     storage.validate_password.return_value = user_id
     oauth2_storage.get_or_create_default_application.return_value \
@@ -48,14 +51,19 @@ def test_login(user_auth_tokens_dto,
         )
 
     #assert
-    assert access_token_obj.user_id == user_auth_tokens_dto.user_id
-    assert access_token_obj.access_token == user_auth_tokens_dto.access_token
-    assert access_token_obj.refresh_token == user_auth_tokens_dto.refresh_token
-    assert access_token_obj.expires_in == user_auth_tokens_dto.expires_in
+    assert access_token_obj["access_token"]["user_id"] == login_response["access_token"]["user_id"]
+    assert access_token_obj["role"] == login_response["role"]
+    assert access_token_obj["access_token"]["access_token"] == login_response["access_token"]["access_token"]
+    assert access_token_obj["access_token"]["expires_in"] == login_response["access_token"]["expires_in"]
+    assert access_token_obj["access_token"]["refresh_token"] == login_response["access_token"]["refresh_token"]
     storage.validate_username.assert_called_once_with(username=username)
     storage.validate_password.assert_called_once_with(
         username=username,
         password=password
+        )
+    presenter.get_login_response.assert_called_once_with(
+        user_auth_tokens_dto,
+        role=role
         )
 
 def test_login_with_invalid_username(user_auth_tokens_dto,

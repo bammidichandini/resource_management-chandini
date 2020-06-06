@@ -17,7 +17,7 @@ class DeleteUserRequestInteractor:
         user_id: int,
         request_id: int
     ):
-        ids_list = list(request_id)
+        ids_list = [request_id]
         valid_input = self.storage.check_for_valid_input(ids_list)
 
         invalid_input = not valid_input
