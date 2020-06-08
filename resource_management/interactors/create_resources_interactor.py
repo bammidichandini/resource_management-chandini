@@ -1,6 +1,7 @@
-from resource_management.interactors.storages.resources_storage_interface import StorageInterface
-from resource_management.interactors.presenters.presenter_interface import PresenterInterface
-from resource_management.exceptions.exceptions import UserCannotManipulateException
+from resource_management.interactors.storages.resources_storage_interface \
+    import StorageInterface
+from resource_management.interactors.presenters.presenter_interface \
+    import PresenterInterface
 from resource_management.dtos.dtos import ResourceDto
 
 

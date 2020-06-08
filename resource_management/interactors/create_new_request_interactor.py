@@ -1,16 +1,17 @@
-from resource_management.interactors.storages.requests_storage_interface import StorageInterface
-from resource_management.interactors.presenters.presenter_interface import PresenterInterface
-from resource_management.exceptions.exceptions import (
-    InvalidDetailsException
-    )
+from resource_management.interactors.storages.requests_storage_interface \
+    import StorageInterface
+from resource_management.interactors.presenters.presenter_interface \
+    import PresenterInterface
 from resource_management.dtos.dtos import CreateUserRequestsDto
 
 
 class CreateNewRequestInteractor:
 
-    def __init__(self, storage: StorageInterface,
-                 presenter: PresenterInterface
-                 ):
+    def __init__(
+        self,
+        storage: StorageInterface,
+        presenter: PresenterInterface
+    ):
         self.storage = storage
         self.presenter = presenter
 

@@ -4,23 +4,28 @@ from resource_management.interactors.storages.storage_interface \
     import StorageInterface
 from resource_management.interactors.presenters.presenter_interface \
     import PresenterInterface
-from common.oauth_user_auth_tokens_service import OAuthUserAuthTokensService
+from common.oauth_user_auth_tokens_service \
+    import OAuthUserAuthTokensService
 
 
 class UserSignUpInteractor:
 
-    def __init__(self,
-                 storage: StorageInterface,
-                 oauth2_storage: OAuth2SQLStorage,
-                 presenter: PresenterInterface):
+    def __init__(
+        self,
+        storage: StorageInterface,
+        oauth2_storage: OAuth2SQLStorage,
+        presenter: PresenterInterface
+    ):
+
         self.storage = storage
         self.presenter = presenter
         self.oauth2_storage = oauth2_storage
 
-    def user_signup_interactor(self,
-                              username: str,
-                              password: str
-                              ):
+    def user_signup_interactor(
+        self,
+        username: str,
+        password: str
+    ):
 
         existed_user = self.storage.is_user_exists(
                 username=username

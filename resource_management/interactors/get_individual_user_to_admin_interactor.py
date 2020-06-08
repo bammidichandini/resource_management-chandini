@@ -1,14 +1,20 @@
-from resource_management.interactors.storages.requests_storage_interface import StorageInterface
-from resource_management.interactors.presenters.presenter_interface import PresenterInterface
+from resource_management.interactors.storages.requests_storage_interface \
+    import StorageInterface
+from resource_management.interactors.presenters.presenter_interface \
+    import PresenterInterface
 
 
 class GetIndividualUserDetailsToAdmin:
 
-    def __init__(self, storage: StorageInterface,
-                 presenter: PresenterInterface
-                ):
+    def __init__(
+        self,
+        storage: StorageInterface,
+        presenter: PresenterInterface
+    ):
+
         self.storage = storage
         self.presenter = presenter
+
 
     def get_individual_user_details_to_admin_interactor(
         self,

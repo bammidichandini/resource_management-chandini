@@ -1,22 +1,33 @@
-from resource_management.interactors.storages.item_storages import StorageInterface
-from resource_management.interactors.presenters.presenter_interface import PresenterInterface
 from resource_management.dtos.dtos import ResourceItemParametersDto
+from resource_management.interactors.storages.item_storages \
+    import StorageInterface
+from resource_management.interactors.presenters.presenter_interface \
+    import PresenterInterface
 
 
 class GetResourceItemsInteractor:
 
-    def __init__(self, storage: StorageInterface,
-                 presenter: PresenterInterface
-                 ):
+    def __init__(
+        self,
+        storage: StorageInterface,
+        presenter: PresenterInterface
+    ):
+
         self.storage = storage
         self.presenter = presenter
 
-    def get_resource_items_interactor(self,
-                             user_id: int,
-                             req_parameter_dto: ResourceItemParametersDto
-                             ):
+
+    def get_resource_items_interactor(
+        self,
+        user_id: int,
+        req_parameter_dto: ResourceItemParametersDto
+    ):
+
         ids_list = [req_parameter_dto.limit]
-        valid_offset = self.storage.check_for_valid_offset(req_parameter_dto.offset)
+
+        valid_offset = self.storage.check_for_valid_offset(
+            req_parameter_dto.offset
+        )
 
         invalid_offset = not valid_offset
 
