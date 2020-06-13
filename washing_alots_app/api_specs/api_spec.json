@@ -31,24 +31,170 @@
     },
     "security": [],
     "definitions": {
-
-        "AvailableDate": {
+        "time_slot": {
             "type": "object",
             "properties": {
-                "AvailableDate": {
-                    "type": "string",
-                    "format": "date"
+                "from_time": {
+                    "type": "string"
                 },
-                "TimeSlots": {
+                "to_time": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "from_time",
+                "to_time"
+            ]
+        },
+        "time_slots_availability": {
+            "allOf": [{
+                    "$ref": "#/definitions/time_slot"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "is_available": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "AvailableSlots": {
+            "type": "object",
+            "properties": {
+                "available_slots": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "object",
+                        "properties": {
+                            "available_date": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "time_slots": {
+                                "$ref": "#/definitions/time_slots_availability"
+
+                            },
+
+                        },
+                        "required": [
+                            "available_date",
+                            "time_slot",
+                            "is_available"
+                        ]
                     }
                 }
             }
-
+        },
+        "UpcomingSlots": {
+            "type": "object",
+            "properties": {
+                "upcoming_slots": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "washing_machine_id": {
+                                "type": "integer",
+                                "format": "int64"
+                            },
+                            "time_slots": {
+                                "$ref": "#/definitions/time_slot"
+                            }
+                        },
+                        "required": [
+                            "washing_machine_id",
+                            "time_slots"
+                        ]
+                    }
+                }
+            }
+        },
+        "BookSlot": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "from_time": {
+                    "type": "string"
+                },
+                "to_time": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "date",
+                "from_time",
+                "to_time"
+            ]
+        },
+        "PreviousSlots": {
+            "type": "object",
+            "properties": {
+                "previous_slots": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "date": {
+                                "type": "string",
+                                "format": "date"
+                            },
+                            "time": {
+                                "$ref": "#/definitions/time_slot"
+                            },
+                            "washing_machine_id": {
+                                "type": "integer",
+                                "format": "int64"
+                            }
+                        },
+                        "required": [
+                            "date",
+                            "time",
+                            "washing_machine_id"
+                        ]
+                    }
+                }
+            }
+        },
+        "AdminWashingMachines": {
+            "type": "object",
+            "properties": {
+                "washing_machines": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "washine_machine_id": {
+                                "type": "integer",
+                                "format": "int64"
+                            },
+                            "is_active": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "washing_machine_id",
+                            "is_active"
+                        ]
+                    }
+                }
+            }
+        },
+        "WashingMachine": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "status"
+            ]
         }
-
     },
     "parameters": {
         "TodoId": {
@@ -57,18 +203,55 @@
             "name": "id",
             "required": true,
             "type": "integer"
+        },
+        "BookSlotRequest": {
+            "description": "Confirm Slot",
+            "in": "body",
+            "name": "confirm_slot",
+            "required": true,
+            "schema": {
+                "$ref": "#/definitions/BookSlot"
+            }
+        },
+        "WashingMachineRequest": {
+            "description": "active or inactive",
+            "in": "body",
+            "name": "status",
+            "required": true,
+            "schema": {
+                "$ref": "#/definitions/WashingMachine"
+            }
         }
     },
     "responses": {
         "SuccessResponse": {
             "description": "success response"
+        },
+        "AvailableSlotsResponse": {
+            "description": "Available Slots",
+            "schema": {
+                "$ref": "#/definitions/AvailableSlots"
+
+            }
+        },
+        "PreviousSlotsResponse": {
+            "description": "Previous Slots",
+            "schema": {
+                "$ref": "#/definitions/PreviousSlots"
+            }
+        },
+        "AdminWashingMachinesResponse": {
+            "description": "Returns all Washing machines",
+            "schema": {
+                "$ref": "#/definitions/AdminWashingMachines"
+            }
         }
     },
     "paths": {
-        "/available_slots/": {
+        "/slots/available/v1/": {
             "get": {
                 "summary": "get available slots",
-                "description": "get available_slots",
+                "description": "get available slots",
                 "operationId": "available_slots",
                 "security": [{
                     "oauth": [
@@ -78,25 +261,18 @@
                 }],
                 "responses": {
                     "200": {
-                        "description": "get available_slots",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/AvailableDate"
-                            }
-                        }
+
+                        "$ref": "#/responses/AvailableSlotsResponse"
                     }
+
                 }
             }
         },
-        "/todos/{id}/": {
-            "parameters": [{
-                "$ref": "#/parameters/TodoId"
-            }],
+        "/slot/upcoming/v1/": {
             "get": {
-                "summary": "Get a todo",
-                "description": "Returns a todo.",
-                "operationId": "get_todo",
+                "summary": "Get upcoming slot",
+                "description": "Returns upcoming slot.",
+                "operationId": "get_upcoming_slot",
                 "security": [{
                     "oauth": [
                         "read"
@@ -104,44 +280,86 @@
                 }],
                 "responses": {
                     "200": {
-                        "description": "A todo",
+                        "description": "Returns your booked date",
+                        "schema": {
+                            "$ref": "#/definitions/UpcomingSlots"
 
+                        }
                     }
                 }
-            },
-            "put": {
+            }
+        },
+        "/slot/booking/v1/": {
+            "post": {
+                "summary": "slot booking",
+                "description": "slot booking.",
+                "operationId": "book_slot",
+                "security": [{
+                    "oauth": [
+                        "write"
+                    ]
+                }],
                 "parameters": [{
-                    "$ref": "#/parameters/TodoId"
-                }],
-                "summary": "Updates a todo",
-                "description": "Updates a todo.",
-                "operationId": "update_todo",
-                "security": [{
-                    "oauth": [
-                        "update"
-                    ]
+                    "$ref": "#/parameters/BookSlotRequest"
                 }],
                 "responses": {
                     "200": {
-                        "$ref": "#/responses/SuccessResponse"
+                        "description": "SuccessResponse"
                     }
                 }
-            },
-            "delete": {
-                "summary": "Deletes a todo",
-                "description": "Deletes a todo.",
-                "operationId": "delete_todo",
+            }
+        },
+        "/previous_slots/v1/": {
+            "get": {
+                "summary": "Previous slots",
+                "description": "prevoius slots",
+                "operationId": "previous_slots",
                 "security": [{
                     "oauth": [
-                        "delete"
+                        "read"
                     ]
+                }],
+                "parameters": [{
+                        "name": "offset",
+                        "in": "query",
+                        "description": "Some description for offset",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Some description for limit",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/PreviousSlotsResponse"
+                    }
+                }
+            }
+        },
+        "/washing_machines/v1/": {
+            "post": {
+                "summary": "washing machines",
+                "description": "washing machines",
+                "operationId": "washing_machines",
+                "security": [{
+                    "oauth": [
+                        "write",
+                        "read"
+                    ]
+                }],
+                "parameters": [{
+                    "$ref": "#/parameters/WashingMachineRequest"
                 }],
                 "responses": {
                     "200": {
-                        "$ref": "#/responses/SuccessResponse"
+                        "$ref": "#/responses/AdminWashingMachinesResponse"
                     }
                 }
             }
         }
     }
+
 }
