@@ -1,0 +1,1 @@
+# write your washing_alots_app settings
