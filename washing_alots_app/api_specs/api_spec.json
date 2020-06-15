@@ -31,7 +31,7 @@
     },
     "security": [],
     "definitions": {
-        "time_slot": {
+        "TimeSlot": {
             "type": "object",
             "properties": {
                 "from_time": {
@@ -46,19 +46,17 @@
                 "to_time"
             ]
         },
-        "time_slots_availability": {
-            "allOf": [{
-                    "$ref": "#/definitions/time_slot"
+        "TimeSlotsAvailability": {
+            "type": "object",
+            "properties": {
+                "time_slot": {
+                    "$ref": "#/definitions/TimeSlot"
                 },
-                {
-                    "type": "object",
-                    "properties": {
-                        "is_available": {
-                            "type": "string"
-                        }
-                    }
+                "is_available": {
+                    "type": "boolean"
                 }
-            ]
+            }
+
         },
         "AvailableSlots": {
             "type": "object",
@@ -73,8 +71,10 @@
                                 "format": "date"
                             },
                             "time_slots": {
-                                "$ref": "#/definitions/time_slots_availability"
-
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/TimeSlotsAvailability"
+                                }
                             },
 
                         },
@@ -100,7 +100,7 @@
                                 "format": "int64"
                             },
                             "time_slots": {
-                                "$ref": "#/definitions/time_slot"
+                                "$ref": "#/definitions/TimeSlot"
                             }
                         },
                         "required": [
@@ -118,11 +118,8 @@
                     "type": "string",
                     "format": "date"
                 },
-                "from_time": {
-                    "type": "string"
-                },
-                "to_time": {
-                    "type": "string"
+                "time_slot": {
+                    "$ref": "#/definitions/TimeSlot"
                 }
             },
             "required": [
@@ -143,8 +140,8 @@
                                 "type": "string",
                                 "format": "date"
                             },
-                            "time": {
-                                "$ref": "#/definitions/time_slot"
+                            "time_slot": {
+                                "$ref": "#/definitions/TimeSlot"
                             },
                             "washing_machine_id": {
                                 "type": "integer",
@@ -173,7 +170,7 @@
                                 "format": "int64"
                             },
                             "is_active": {
-                                "type": "string"
+                                "type": "boolean"
                             }
                         },
                         "required": [
@@ -184,15 +181,54 @@
                 }
             }
         },
+        "Slots": {
+            "type": "object",
+            "properties": {
+                "day": {
+                    "type": "string",
+                    "enum": [
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                        "Saturday"
+                    ]
+                }
+            },
+            "required": [
+                "day"
+            ]
+
+        },
         "WashingMachine": {
             "type": "object",
             "properties": {
-                "status": {
+                "is_active": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "is_active"
+            ]
+        },
+        "SlotsResponse": {
+            "type": "object",
+            "properties": {
+                "slot": {
+                    "type": "string"
+                },
+                "from_time": {
+                    "type": "string"
+                },
+                "to_time": {
                     "type": "string"
                 }
             },
             "required": [
-                "status"
+                "slot",
+                "from_time",
+                "to_time"
             ]
         }
     },
@@ -203,6 +239,15 @@
             "name": "id",
             "required": true,
             "type": "integer"
+        },
+        "SlotsRequest": {
+            "description": "washing slots",
+            "in": "body",
+            "name": "day",
+            "required": true,
+            "schema": {
+                "$ref": "#/definitions/Slots"
+            }
         },
         "BookSlotRequest": {
             "description": "Confirm Slot",
@@ -244,6 +289,25 @@
             "description": "Returns all Washing machines",
             "schema": {
                 "$ref": "#/definitions/AdminWashingMachines"
+            }
+        },
+        "SlotBookResponse": {
+            "description": "Raises corresponding exceptions",
+            "schema": {
+                "type": "string",
+                "enum": [
+                    "ExpiredSlot",
+                    "AnotherAttemptToBook"
+                ]
+            }
+        },
+        "SlotsSuccessResponse": {
+            "description": "Returns all slots",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/SlotsResponse"
+                }
             }
         }
     },
@@ -289,7 +353,7 @@
                 }
             }
         },
-        "/slot/booking/v1/": {
+        "/slot/book/v1/": {
             "post": {
                 "summary": "slot booking",
                 "description": "slot booking.",
@@ -305,11 +369,14 @@
                 "responses": {
                     "200": {
                         "description": "SuccessResponse"
+                    },
+                    "400": {
+                        "$ref": "#/responses/SlotBookResponse"
                     }
                 }
             }
         },
-        "/previous_slots/v1/": {
+        "/slots/previous/v1/": {
             "get": {
                 "summary": "Previous slots",
                 "description": "prevoius slots",
@@ -322,12 +389,14 @@
                 "parameters": [{
                         "name": "offset",
                         "in": "query",
+                        "required": true,
                         "description": "Some description for offset",
                         "type": "integer"
                     },
                     {
                         "name": "limit",
                         "in": "query",
+                        "required": true,
                         "description": "Some description for limit",
                         "type": "integer"
                     }
@@ -356,6 +425,35 @@
                 "responses": {
                     "200": {
                         "$ref": "#/responses/AdminWashingMachinesResponse"
+                    }
+                }
+            }
+        },
+        "/slots/corresponding/{washing_machine_id}/v1/": {
+            "post": {
+                "summary": "Washing slots",
+                "description": "washing slots for corresponding date",
+                "operationId": "washing_slots",
+                "security": [{
+                    "oauth": [
+                        "write",
+                        "read"
+                    ]
+                }],
+                "parameters": [{
+                        "name": "washing_machine_id",
+                        "in": "path",
+                        "required": true,
+                        "description": "Particular Washing machine id",
+                        "type": "string"
+                    },
+                    {
+                        "$ref": "#/parameters/SlotsRequest"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/SlotsSuccessResponse"
                     }
                 }
             }

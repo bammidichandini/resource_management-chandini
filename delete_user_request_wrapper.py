@@ -43,3 +43,4 @@ class DeleteUserRequestInteractor:
             user_id=user_id,
             request_id=request_id
         )
+
