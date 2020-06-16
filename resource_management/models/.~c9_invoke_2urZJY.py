@@ -50,5 +50,4 @@ class Request(models.Model):
         (AccessLevel.Read_and_Write.value, AccessLevel.Read_and_Write.value)
         )
 
-
     access_level = models.CharField(max_length=50, choices=access_choices,null=True)

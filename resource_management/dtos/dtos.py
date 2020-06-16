@@ -142,3 +142,4 @@ class GetUserRequestsDto:
 class getuserrequestsdto:
     count: int
     requests: List[GetUserRequestsDto]
+
