@@ -1,0 +1,2 @@
+class FormExpired(Exception):
+    pass
