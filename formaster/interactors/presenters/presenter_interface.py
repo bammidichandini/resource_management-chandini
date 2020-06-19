@@ -5,13 +5,13 @@ from abc import abstractmethod
 class PresenterInterface(ABC):
 
     @abstractmethod
-    def get_create_post_response(self, post_id: int):
+    def raise_form_does_not_exist_exception(self):
         pass
 
     @abstractmethod
-    def raise_invalid_post_id_exception(self):
+    def raise_form_expired_exception(self):
         pass
 
     @abstractmethod
-    def get_create_comment_response(self, comment_id: int):
+    def raise_invalid_question_id(self):
         pass
