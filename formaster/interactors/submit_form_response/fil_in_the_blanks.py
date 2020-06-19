@@ -17,11 +17,7 @@ class FillInTheBlanksInteractor(SubmitFormResponseInteractor):
         self.user_option = user_option
 
     def validate_user_response(self):
-        answers = self.storage.get_answers_for_question(self.question_id)
-        user_option = self.user_option.casefold()
-        user_option = re.sub(" ","",user_option)
-        if not user_option == answers:
-            raise InvalidUserResponse
+        pass
 
     def create_user_response(self) -> int:
         user_response_dto = FibResponseDto(

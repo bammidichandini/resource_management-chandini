@@ -37,7 +37,3 @@ class StorageInterface(ABC):
         self, user_response_dto: FibResponseDto
     ) -> int:
         pass
-
-    @abstractmethod
-    def get_answers_for_question(self, answers: int) -> str:
-        pass
