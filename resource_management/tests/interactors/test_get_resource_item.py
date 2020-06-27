@@ -42,7 +42,7 @@ def test_get_resource_item(item_dto,
         req_param_dto=param_dto
         )
     presenter.get_resource_items_response.assert_called_once_with(
-        items_dto_list=item_dto
+        items_dto=item_dto
         )
     assert actual_dict[0]["item_name"] == get_item[0]["item_name"]
     assert actual_dict[0]["link"] == get_item[0]["link"]

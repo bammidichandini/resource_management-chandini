@@ -6,21 +6,22 @@ from resource_management.exceptions.exceptions import (
     )
 
 
-@pytest.mark.parametrize("request_id", [
-    (-1),(0)])
-def test_delete_user_request_with_invalid_id_raises_exception(request_id):
+# @pytest.mark.parametrize("request_id", [
+#     (-1),(0)])
+# @pytest.mark.django_db
+# def test_delete_user_request_with_invalid_id_raises_exception(request_id):
 
-    # arrange
+#     # arrange
 
-    user_id = 1
-    storage = StorageImplementation()
+#     user_id = 1
+#     storage = StorageImplementation()
 
-    # act
-    with pytest.raises(InvalidIdException):
-        storage.delete_user_request(
-            request_id=request_id,
-            user_id=user_id
-            )
+#     # act
+#     with pytest.raises(InvalidIdException):
+#         storage.delete_user_request(
+#             request_id=request_id,
+#             user_id=user_id
+#             )
 
 @pytest.mark.django_db
 def test_delete_user_request(

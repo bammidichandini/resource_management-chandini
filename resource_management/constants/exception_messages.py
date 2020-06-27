@@ -24,7 +24,7 @@ EXISTED_USER = (
     )
 
 INVALID_ID = (
-    "Id must be positive integer and not too be zero",
+    "Id doesnot exist please give a valid id",
     "INVALID_ID"
     )
 

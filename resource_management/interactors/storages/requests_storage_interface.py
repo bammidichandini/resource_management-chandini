@@ -15,11 +15,6 @@ from resource_management.dtos.dtos import (
 class StorageInterface(ABC):
 
     @abstractmethod
-    def get_requests(self) -> List[RequestsDto]:
-        pass
-
-
-    @abstractmethod
     def set_status(
         self, status: str,
         request_ids_list: List[int],

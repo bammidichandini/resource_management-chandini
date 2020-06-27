@@ -1,4 +1,5 @@
 import pytest
+from django.core.exceptions import ObjectDoesNotExist
 from resource_management.models import Request
 from resource_management.storages.requests_storage_implementation import StorageImplementation
 from resource_management.exceptions.exceptions import (
@@ -7,7 +8,7 @@ from resource_management.exceptions.exceptions import (
     )
 
 @pytest.mark.parametrize("request_id", [
-    (-1),(0)])
+    (100),(101)])
 @pytest.mark.django_db
 def test_update_user_request_with_invalid_id(
     request_update_dto,
@@ -21,7 +22,7 @@ def test_update_user_request_with_invalid_id(
     storage = StorageImplementation()
 
     # act
-    with pytest.raises(InvalidIdException):
+    with pytest.raises(ObjectDoesNotExist):
         storage.update_user_request(
             user_id=user_id,
             update_dto=request_update_dto,

@@ -4,6 +4,13 @@ from common.dtos import UserAuthTokensDTO
 from resource_management.interactors.presenters.presenter_interface \
     import PresenterInterface
 from typing import List
+from resource_management.constants.exception_messages import (
+    INVALID_PASSWORD,
+    INVALID_USER,
+    FORBIDDEN,
+    EXISTED_USER,
+    INVALID_ID
+)
 from resource_management.constants.enums import TimeFormat
 from resource_management.dtos.dtos import (
     ResourceDto,
@@ -18,7 +25,7 @@ from resource_management.dtos.dtos import (
     getuserrequestsdto,
     ResourceItemParametersDto
     )
-
+from django_swagger_utils.drf_server.exceptions import BadRequest, Forbidden, NotFound
 from resource_management.exceptions.exceptions import UserCannotManipulateException
 from resource_management.exceptions.exceptions import (
     InvalidUserException,
@@ -31,11 +38,11 @@ from resource_management.exceptions.exceptions import (
 class PresenterImplementation(PresenterInterface):
 
     def raise_invalid_password_exception(self):
-        raise InvalidPasswordException
+        raise NotFound(*INVALID_PASSWORD)
 
 
     def raise_invalid_username_exception(self):
-        raise InvalidUserException
+        raise NotFound(*INVALID_USER)
 
 
     def get_login_response(self,
@@ -97,7 +104,7 @@ class PresenterImplementation(PresenterInterface):
         return resources_dict_list
 
     def raise_user_cannot_manipulate_exception(self):
-        raise UserCannotManipulateException
+        raise BadRequest(*FORBIDDEN)
 
 
     def get_resource_items_response(
@@ -166,11 +173,11 @@ class PresenterImplementation(PresenterInterface):
         return user_dict
 
     def raise_user_already_existed_exception(self):
-        raise UserAlreadyExistedException
+        raise BadRequest(*EXISTED_USER)
 
 
     def raise_invalid_id_exception(self):
-        raise InvalidIdException
+        raise NotFound(*INVALID_ID)
 
     def raise_invalid_details_exception(self):
         raise InvalidDetailsException

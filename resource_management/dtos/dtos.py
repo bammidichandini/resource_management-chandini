@@ -6,7 +6,7 @@ from resource_management.constants.enums import AccessLevel, RequestStatus
 
 @dataclass
 class ResourceDto:
-    id: Optional[int]
+    #id: Optional[int]
     image_url: str
     name: str
     item_name: str
@@ -26,7 +26,7 @@ class Itemdto:
     item_name: str
     link: str
     resource_name: str
-    access_level: str
+
 
 @dataclass
 class userdto:

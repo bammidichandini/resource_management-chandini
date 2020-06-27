@@ -3,6 +3,10 @@ import enum
 from ib_common.constants import BaseEnumClass
 
 
+class Boolean(enum.Enum):
+    true = True
+    false = False
+
 class Gender(BaseEnumClass, enum.Enum):
     Male = "MALE"
     Female = "FEMALE"

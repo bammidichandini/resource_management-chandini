@@ -18,6 +18,6 @@ def test_get_resources_item(item_dto,
     items_list = storage.get_resource_items(get_req_param)
 
     #assert
-    assert expected_dto_list[0].item_name == items_list[0].item_name
+    assert expected_dto_list["item_name"] == items_list["item_name"]
     assert expected_dto_list[0].link == items_list[0].link
     assert expected_dto_list[0].description == items_list[0].description

@@ -43,7 +43,7 @@ class GetUsersForItems:
                 )
 
         response = self.presenter.get_user_for_items_response(
-            user_dto=list_of_user_dto
+            list_of_user_dto=list_of_user_dto
             )
 
         return response

@@ -5,6 +5,7 @@ from common.dtos import UserAuthTokensDTO
 from resource_management.dtos.dtos import (
     ItemDto,
     UserDto,
+    userdto,
     RequestsDto,
     ResourceItemParametersDto
     )
@@ -52,7 +53,8 @@ class StorageInterface(ABC):
         pass
 
     @abstractmethod
-    def get_users_for_items(self, item_id: int) -> UserDto:
+    def get_users_for_items(self, item_id: int, offset: int, limit: int) \
+    -> List[userdto]:
         pass
 
     @abstractmethod

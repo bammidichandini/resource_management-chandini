@@ -11,6 +11,7 @@ from resource_management.dtos.dtos import(
     ItemDto,
     RequestsDto,
     UserDto,
+    userdto,
     ResourceItemParametersDto,
     UpdateProfileDto,
     RegisterUserDto,
@@ -60,7 +61,7 @@ def user_auth_tokens_dto():
     user_auth_tokens_dto = UserAuthTokensDTO(
         user_id=1,
         access_token="12345",
-        refresh_token="56789",
+        refresh_token="12345",
         expires_in=datetime.datetime(2019, 4, 22, 0, 0)
     )
 
@@ -73,7 +74,7 @@ def login_response():
         "access_token": {
             "user_id": 1,
             "access_token": "12345",
-            "refresh_token": "56789",
+            "refresh_token": "12345",
             "expires_in": datetime.datetime(2019, 4, 22, 0, 0)
         }
     }
@@ -94,7 +95,6 @@ def resource_dto():
 @pytest.fixture()
 def resource_dtos():
     resource_dtos = ResourceDto(
-        id=1,
         image_url="aws/cloud/aws.png",
         name= "aws",
         item_name= "cloud_services",
@@ -176,7 +176,8 @@ def requests():
 
 @pytest.fixture()
 def get_item_users():
-    item_users = [UserDto(
+    item_users = [userdto(
+            id=1,
             person_name="chandini",
             department="engineer",
             job_role="backend_developer",
@@ -187,6 +188,7 @@ def get_item_users():
 @pytest.fixture()
 def get_item_users_response():
     response =[ {
+        "id": 1,
         "person_name": "chandini",
         "department": "engineer",
         "job_role": "backend_developer",
@@ -285,12 +287,14 @@ def update_profile_with_invalid_gender():
 def user_details():
     details = [
         RegisterUserDto(
+            id=1,
             person_name="madhuri",
             job_role="backend_developer",
             department="engineer",
             url=""
             ),
         RegisterUserDto(
+            id=2,
             person_name="chandini",
             job_role="backend_developer",
             department="engineer",
@@ -322,6 +326,7 @@ def user_response():
 def user_requests_dto():
     response = [
         IndividualUserRequestsDto(
+            id=1,
             person_name="chandini",
             department="engineer",
             job_role="backend_developer",
@@ -339,6 +344,7 @@ def user_requests_dto():
 @pytest.fixture()
 def get_user_requests_response():
     response =  [{
+            "id": 1,
             "person_name":"chandini",
             "department":"engineer",
             "job_role":"backend_developer",
@@ -438,6 +444,7 @@ def add_request_dto_invalid_reason():
 @pytest.fixture()
 def get_user_requests_dto():
     response = [GetUserRequestsDto(
+            id=1,
             resource_name="aws",
             item_name="service",
             access_level="Read",

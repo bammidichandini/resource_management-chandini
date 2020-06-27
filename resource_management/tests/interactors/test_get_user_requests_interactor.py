@@ -14,6 +14,9 @@ def test_get_user_requests(
 
     # arrange
     user_id = 1
+    offset = 0
+    limit = 1
+
     expected = get_user_requests_dto_response
 
     storage = create_autospec(StorageInterface)
@@ -28,10 +31,10 @@ def test_get_user_requests(
         )
 
     # act
-    response = interactor.get_user_requests_interactor(user_id=user_id)
+    response = interactor.get_user_requests_interactor(user_id=user_id, offset=offset, limit=limit)
 
     # assert
-    storage.get_user_requests.assert_called_once_with(user_id)
+    storage.get_user_requests.assert_called_once_with(user_id=user_id, offset=offset, limit=limit)
     presenter.get_user_requests_response(get_user_requests_dto)
     assert expected[0]["resource_name"] == response[0]["resource_name"]
     assert expected[0]["item_name"] == response[0]["item_name"]

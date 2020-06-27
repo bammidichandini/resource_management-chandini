@@ -27,6 +27,5 @@ def test_get_user_resources(
     # assert
     assert actual_dto[0].resource_name == expected_dto[0].resource_name
     assert actual_dto[0].item_name == expected_dto[0].item_name
-    assert actual_dto[0].access_level == expected_dto[0].access_level
     assert actual_dto[0].link == expected_dto[0].link
 

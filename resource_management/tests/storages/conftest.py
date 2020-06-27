@@ -15,6 +15,8 @@ from resource_management.dtos.dtos import (
     ResourceItemParametersDto,
     UpdateProfileDto,
     RegisterUserDto,
+    userdto,
+    getuserrequestsdto,
     RequestsUpdateDto,
     IndividualUserRequestsDto,
     CreateUserRequestsDto,
@@ -102,13 +104,14 @@ def create_useraccess(create_users1,create_items):
             )
 
 @pytest.fixture()
-def create_requests(create_useraccess):
+def create_requests(create_useraccess, create_resources, create_users1):
     requests = [
         {
             "item": 1,
             "duration": datetime.datetime(2019, 4, 22, 0, 0),
             "status": RequestStatus.Pending.value,
-            "reason": "want to access"
+            "reason": "want to access",
+            "access_level": "Read"
         }
         ]
     for request in requests:
@@ -116,7 +119,10 @@ def create_requests(create_useraccess):
                 item_id=request["item"],
                 duration=request["duration"],
                 reason=request["reason"],
-                status=request["status"]
+                status=request["status"],
+                access_level=request["access_level"],
+                resource_id=1,
+                user_id=1
                 )
 
 @pytest.fixture()
@@ -244,8 +250,7 @@ def reitem_dto():
         item_name="cloud",
         link="https://www.aws.in/cloud_services",
         description="service provided by aws",
-        resource_name="aws",
-        access_level="Read"
+        resource_name="aws"
         )]
     return items_dto
 
@@ -255,20 +260,20 @@ def reitems_dto():
         item_name="cloud",
         link="https://www.aws.in/cloud_services",
         description="service provided by aws",
-        resource_name="aws",
-        access_level="Read"
+        resource_name="aws"
         )
     return items_dto
 
 
 @pytest.fixture()
 def get_item_users():
-    item_users = [UserDto(
+    item_users = userdto(
+            id=1,
             person_name="madhuri",
             department="engineer",
             job_role="backend_developer",
             access_level="Read")
-        ]
+
     return item_users
 
 @pytest.fixture()
@@ -297,42 +302,10 @@ def get_req_param():
 @pytest.fixture()
 def update_user_profile():
     profile = UpdateProfileDto(
+        id=1,
         name="Suman",
         email="suman@gmail.com",
         gender=Gender.Male.value,
-        job_role="Full_stack developer",
-        department="software"
-    )
-    return profile
-
-@pytest.fixture()
-def update_profile_with_invalid_name():
-    profile = UpdateProfileDto(
-        name=1,
-        email="suman@gmail.com",
-        gender=Gender.Male.value,
-        job_role="Full_stack developer",
-        department="software"
-    )
-    return profile
-
-@pytest.fixture()
-def update_profile_with_invalid_email():
-    profile = UpdateProfileDto(
-        name="chandini",
-        email=1,
-        gender=Gender.Male.value,
-        job_role="Full_stack developer",
-        department="software"
-    )
-    return profile
-
-@pytest.fixture()
-def update_profile_with_invalid_gender():
-    profile = UpdateProfileDto(
-        name="Suman",
-        email="suman@gmail.com",
-        gender=1,
         job_role="Full_stack developer",
         department="software"
     )
@@ -343,6 +316,7 @@ def update_profile_with_invalid_gender():
 def user_details():
     details = [
         RegisterUserDto(
+            id=1,
             person_name="chandini",
             job_role="backend_developer",
             department="engineer",
@@ -355,6 +329,7 @@ def user_details():
 @pytest.fixture()
 def user_requests_dto():
     response = [IndividualUserRequestsDto(
+            id=1,
             person_name="madhuri",
             department="engineer",
             job_role="backend_developer",
@@ -375,8 +350,7 @@ def items_dto():
         item_name="cloud",
         link="https://www.aws.in/cloud_services",
         resource_name="aws",
-        description="service provided by aws",
-        access_level=AccessLevel.Read.value
+        description="service provided by aws"
         )]
     return items_dto
 
@@ -384,11 +358,12 @@ def items_dto():
 @pytest.fixture()
 def request_update_dto():
     response = RequestsUpdateDto(
+        id=1,
         access_level="Write",
         duedatetime=datetime.datetime(2019, 3, 1, 0, 0),
         remarks="accept your access",
-        resource_name="amazon",
-        item_name="chandini",
+        resource_name="aws",
+        item_name="cloud",
         access_reason="want"
         )
     return response
@@ -451,12 +426,15 @@ def add_request_dto_invalid_reason():
 
 @pytest.fixture()
 def get_user_requests_dto():
-    response = [GetUserRequestsDto(
+    response = getuserrequestsdto(
+    count=1,
+    requests=[GetUserRequestsDto(
+            id=1,
             resource_name="aws",
             item_name="cloud",
             access_level="Read",
             status="Pending"
-        )]
+        )])
     return response
 
 

@@ -74,6 +74,9 @@ class StorageImplementation(StorageInterface):
             resource = Resource.objects.get(name=update_dto.resource_name)
             item = Item.objects.get(resource=resource,name=update_dto.item_name)
             request = Request.objects.filter(id=request_id)
+            if not len(request):
+                raise ObjectDoesNotExist
+
             request.update(
                     resource=resource,
                     item=item,
@@ -81,10 +84,10 @@ class StorageImplementation(StorageInterface):
                     duration=update_dto.duedatetime,
                     reason=update_dto.access_reason,
                     remarks=update_dto.remarks,
-                    access_llevel=update_dto.access_level
+                    access_level=update_dto.access_level
                 )
 
-            UserAccess.objects.filter(item=item,resource=resource,user_id=user_id).update(
+            UserAccess.objects.filter(item=item,user_id=user_id).update(
                 access_level=update_dto.access_level,
                 item=item,
                 user_id=user_id
@@ -121,7 +124,7 @@ class StorageImplementation(StorageInterface):
 
     def get_user_requests(self, user_id: int,
     offset, limit
-    ) -> getuserrequestsdto:
+    ) -> List[getuserrequestsdto]:
 
         count = Request.objects.filter(user_id=user_id).count()
         user_requests = Request.objects.filter(user_id=user_id).prefetch_related('item','resource')[offset:offset+limit]

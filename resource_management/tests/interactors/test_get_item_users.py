@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import create_autospec
-from resource_management.exceptions.exceptions import InvalidIdException
+# from resource_management.exceptions.exceptions import InvalidIdException
+from django_swagger_utils.drf_server.exceptions import NotFound
 from resource_management.interactors.get_item_accessible_user_interactor \
     import GetUsersForItems
 from resource_management.interactors.storages.item_storages import StorageInterface
@@ -15,6 +16,8 @@ def test_get_item_related_user(get_item_users,
     # arrange
 
     item_id = 1
+    offset = 0
+    limit = 1
     expected_response = get_item_users_response
 
     storage = create_autospec(StorageInterface)
@@ -32,17 +35,21 @@ def test_get_item_related_user(get_item_users,
 
     # act
     actual_response = interactor.get_users_for_items_interactor(
-        item_id=item_id
+        item_id=item_id,
+        offset=offset,
+        limit=limit
         )
 
     # assert
     storage.get_users_for_items.assert_called_once_with(
-        item_id=item_id
+        item_id=item_id,
+        offset=offset,
+        limit=limit
         )
     presenter.get_user_for_items_response.assert_called_once_with(
         get_item_users
         )
-    storage.check_for_valid_input.assert_called_once_with([item_id])
+    storage.check_for_valid_input.assert_called_once_with([item_id,limit])
     assert expected_response[0]["person_name"] == actual_response[0]["person_name"]
     assert expected_response[0]["department"] == actual_response[0]["department"]
     assert expected_response[0]["job_role"] == actual_response[0]["job_role"]
@@ -58,12 +65,14 @@ def test_get_item_related_user_with_invalid_datad(
     ):
 
     # arrange
+    offset = 0
+    limit = 1
 
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
     storage.check_for_valid_input.return_value = False
-    presenter.raise_invalid_id_exception.side_effect = InvalidIdException
+    presenter.raise_invalid_id_exception.side_effect = NotFound
     storage.get_users_for_items.return_value = get_item_users
     presenter.get_user_for_items_response.return_value = \
                 get_item_users_response
@@ -74,8 +83,10 @@ def test_get_item_related_user_with_invalid_datad(
         )
 
     # act
-    with pytest.raises(InvalidIdException):
+    with pytest.raises(NotFound):
         interactor.get_users_for_items_interactor(
-            item_id=item_id
+            item_id=item_id,
+            offset=offset,
+            limit=limit
             )
 

@@ -1,4 +1,5 @@
 from typing import List
+from resource_management.exceptions.exceptions import InvalidIdException
 from django.core.exceptions import ObjectDoesNotExist
 from resource_management.interactors.storages.resources_storage_interface \
     import StorageInterface
@@ -23,21 +24,16 @@ class DeleteResourcesInteractor:
         resource_ids_list: List[int]
     ):
 
-        valid_input = self.storage.check_for_valid_input(
-            resource_ids_list
-        )
-
-        invalid_input = not valid_input
-        if invalid_input:
-            self.presenter.raise_invalid_id_exception()
-
         is_admin = self.storage.is_admin(user_id)
 
         if is_admin:
+            try:
                 self.storage.delete_resources(
                     user_id=user_id,
                     resource_ids_list=resource_ids_list
                     )
+            except InvalidIdException:
+                self.presenter.raise_invalid_id_exception()
 
         else:
             self.presenter.raise_user_cannot_manipulate_exception()

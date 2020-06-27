@@ -14,7 +14,7 @@ from resource_management.exceptions.exceptions import (
     InvalidPasswordException
     )
 from .validator_class import ValidatorClass
-from django_swagger_utils.drf_server.exceptions import BadRequest
+from django_swagger_utils.drf_server.exceptions import BadRequest, Forbidden, NotFound
 from resource_management.interactors.delete_resource_interactor \
     import DeleteResourcesInteractor
 
@@ -57,17 +57,11 @@ def api_wrapper(*args, **kwargs):
         storage=storage,
         presenter=presenter
         )
-    try:
-        interactor.delete_resources_interactor(
-            user_id=user.id,
-            resource_ids_list=resource_ids_list
-            )
-        success_repsonse = "Successfully deletes the resource"
-        data = json.dumps({'Success Response': success_repsonse})
-        response = HttpResponse(data, status=200)
-    except UserCannotManipulateException:
-        raise BadRequest(*FORBIDDEN)
-    except InvalidIdException:
-        raise BadRequest(*INVALID_ID)
+    interactor.delete_resources_interactor(
+        user_id=user.id,
+        resource_ids_list=resource_ids_list
+        )
+    success_repsonse = "Successfully deletes the resource"
+    data = json.dumps({'Success Response': success_repsonse})
+    response = HttpResponse(data, status=200)
     return response
-

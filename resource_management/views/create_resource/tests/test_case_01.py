@@ -2,7 +2,10 @@
 # TODO: Update test case description
 """
 
+from resource_management.utils.custom_test_utils import CustomTestUtils
 from django_swagger_utils.utils.test import CustomAPITestCase
+from resource_management.models import Resource
+from resource_management.factories import ResourceFactory
 from . import APP_NAME, OPERATION_NAME, REQUEST_METHOD, URL_SUFFIX
 
 REQUEST_BODY = """
@@ -27,14 +30,67 @@ TEST_CASE = {
 }
 
 
-class TestCase01CreateResourceAPITestCase(CustomAPITestCase):
+class TestCase01CreateResourceAPITestCase(CustomTestUtils):
     app_name = APP_NAME
     operation_name = OPERATION_NAME
     request_method = REQUEST_METHOD
     url_suffix = URL_SUFFIX
     test_case_dict = TEST_CASE
 
+    import json
+    request_body = json.loads(REQUEST_BODY)
+    resource_name = request_body["resource_name"]
+    item_name = request_body["item_name"]
+    link = request_body["link"]
+    image_url = request_body["image_url"]
+    description = request_body["description"]
+
+    def setupUser(self, username, password):
+        super(TestCase01CreateResourceAPITestCase, self).setupUser(
+            username=username, password=password
+        )
+
+        self.create_admin(self.foo_user)
+
     def test_case(self):
         self.default_test_case() # Returns response object.
         # Which can be used for further response object checks.
         # Add database state checks here.
+
+        resource = Resource.objects.get(
+            name=self.resource_name,
+            item_name=self.item_name,
+            link=self.link,
+            description=self.description,
+            image_url=self.image_url
+        )
+
+        self.assert_match_snapshot(
+            name="resource_id",
+            value=resource.id
+        )
+
+        self.assert_match_snapshot(
+            name="resource_name",
+            value=resource.name
+        )
+
+        self.assert_match_snapshot(
+            name="resource_item_name",
+            value=resource.item_name
+        )
+
+        self.assert_match_snapshot(
+            name="link",
+            value=resource.link
+        )
+
+        self.assert_match_snapshot(
+            name="description",
+            value=resource.description
+        )
+
+        self.assert_match_snapshot(
+            name="resource_image_url",
+            value=resource.image_url
+        )

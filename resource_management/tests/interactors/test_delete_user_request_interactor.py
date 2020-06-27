@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import create_autospec
 from resource_management.exceptions.exceptions import InvalidIdException
-from resource_management.interactors.storages.requests_storage_interface \
+from resource_management.interactors.storages.item_storages \
     import StorageInterface
 from resource_management.interactors.presenters.presenter_interface \
     import PresenterInterface

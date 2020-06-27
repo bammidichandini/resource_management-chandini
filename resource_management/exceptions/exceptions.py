@@ -1,3 +1,4 @@
+from typing import List
 
 
 class InvalidUserException(Exception):
@@ -20,3 +21,10 @@ class InvalidIdException(Exception):
 
 class InvalidDetailsException(Exception):
     pass
+
+class InvalidOffsetOrLimit(Exception):
+    pass
+
+class InvalidItemsException(Exception):
+    def __init__(self, item_ids: List[int]):
+        self.items_ids = item_ids

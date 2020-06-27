@@ -57,17 +57,13 @@ def api_wrapper(*args, **kwargs):
         storage=storage,
         presenter=presenter
         )
-    try:
-        interactor.delete_items_interactor(
-            user_id=user.id,
-            item_ids_list=item_ids_list
-            )
-        success_repsonse = "Successfully deletes the item_id"
-        data = json.dumps({'Success Response': success_repsonse})
-        response = HttpResponse(data, status=200)
-    except UserCannotManipulateException:
-        raise BadRequest(*FORBIDDEN)
-    except InvalidIdException:
-        raise BadRequest(*INVALID_ID)
+
+    interactor.delete_items_interactor(
+        user_id=user.id,
+        item_ids_list=item_ids_list
+        )
+    success_repsonse = "Successfully deletes the item_id"
+    data = json.dumps({'Success Response': success_repsonse})
+    response = HttpResponse(data, status=200)
     return response
 

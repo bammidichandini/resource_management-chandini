@@ -6,11 +6,7 @@ from resource_management.storages.resources_storage import StorageImplementation
 from resource_management.presenters.authentication_presenter import PresenterImplementation
 from resource_management.exceptions.exceptions import UserCannotManipulateException
 from resource_management.dtos.dtos import ResourceDto
-from resource_management.constants.exception_messages import (
-    FORBIDDEN
-    )
 from .validator_class import ValidatorClass
-from django_swagger_utils.drf_server.exceptions import BadRequest
 from resource_management.interactors.create_resources_interactor \
     import CreateResourceInteractor
 
@@ -63,15 +59,13 @@ def api_wrapper(*args, **kwargs):
         storage=storage,
         presenter=presenter
         )
-    try:
-        interactor.create_resource_interactor(
-            resource_dto=resource_dto,
-            user_id=user.id
-            )
-        success_repsonse = "Successfully created a new resource"
-        data = json.dumps({'Success Response': success_repsonse})
-        response = HttpResponse(data, status=200)
-    except UserCannotManipulateException:
-        raise BadRequest(*FORBIDDEN)
+
+    interactor.create_resource_interactor(
+        resource_dto=resource_dto,
+        user_id=user.id
+        )
+    success_repsonse = "Successfully created a new resource"
+    data = json.dumps({'Success Response': success_repsonse})
+    response = HttpResponse(data, status=200)
     return response
 

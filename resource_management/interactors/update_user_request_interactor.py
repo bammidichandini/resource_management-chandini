@@ -2,6 +2,7 @@ from resource_management.interactors.storages.requests_storage_interface \
     import StorageInterface
 from resource_management.interactors.presenters.presenter_interface \
     import PresenterInterface
+from resource_management.models import Resource
 from resource_management.dtos.dtos import RequestsUpdateDto
 
 
@@ -32,8 +33,13 @@ class UpdateUserRequestInteractor:
         if invalid_input:
             self.presenter.raise_invalid_id_exception()
 
-        self.storage.update_user_request(
+        try:
+
+            self.storage.update_user_request(
                     user_id=user_id,
                     request_id=request_id,
                     update_dto=update_dto
-        )
+            )
+        except ObjectDoesNotExist:
+            self.presenter.raise_invalid_id_exception()
+

@@ -61,7 +61,7 @@ class StorageImplementation(StorageInterface):
         ):
 
         items = Item.objects.filter(id__in=item_ids_list)
-        if len(items) == 0:
+        if not len(items) == len(item_ids_list):
             raise ObjectDoesNotExist
 
         items.delete()
@@ -84,8 +84,8 @@ class StorageImplementation(StorageInterface):
                 resource=resource,
                 description=item_dto.description
                 )
-        UserAccess.objects.filter(item_id=item_id, user_id=user_id).\
-            update(access_level=item_dto.access_level)
+        # UserAccess.objects.filter(item_id=item_id, user_id=user_id).\
+        #     update(access_level=item_dto.access_level)
 
 
     def is_admin(self, user_id: int) -> List[int]:
@@ -141,19 +141,20 @@ class StorageImplementation(StorageInterface):
         item_id: int,
         offset: int,
         limit: int
-        ) -> List[UserDto]:
+        ) -> List[userdto]:
 
-        items = Item.objects.filter(id=item_id)
-        count = items.count()
-        userobjects = items.prefetch_related('user')
+        items = Item.objects.get(id=item_id)
+        userobjects = items.user.all()
+        count = len(userobjects)
+        userobjects = userobjects[offset:offset+limit]
         list_of_dtos = []
         for user_obj in userobjects:
             list_of_dtos.append(
                 userdto(
-                id=user_obj.user.id,
-                person_name=user_obj.user.username,
-                department=user_obj.user.department,
-                job_role=user_obj.user.job_role,
+                id=user_obj.id,
+                person_name=user_obj.username,
+                department=user_obj.department,
+                job_role=user_obj.job_role,
                 access_level=user_obj.access_level
                 ))
         user_dto = UserDto(

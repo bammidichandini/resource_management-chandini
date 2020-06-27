@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import create_autospec
-from resource_management.exceptions.exceptions import UserCannotManipulateException
+#from resource_management.exceptions.exceptions import UserCannotManipulateException
+from django_swagger_utils.drf_server.exceptions import Forbidden
 from resource_management.interactors.storages.resources_storage_interface import StorageInterface
 from resource_management.interactors.presenters.presenter_interface import PresenterInterface
 from resource_management.interactors.create_resources_interactor import CreateResourceInteractor
@@ -46,7 +47,7 @@ def test_create_resource_with_user(resource_dtos):
 
     storage.is_admin.return_value =False
     presenter.raise_user_cannot_manipulate_exception.side_effect = \
-        UserCannotManipulateException
+        Forbidden
 
     interactor = CreateResourceInteractor(
         storage=storage,
@@ -54,7 +55,7 @@ def test_create_resource_with_user(resource_dtos):
         )
 
     #act
-    with pytest.raises(UserCannotManipulateException):
+    with pytest.raises(Forbidden):
         interactor.create_resource_interactor(
             resource_dtos,
             user_id=user_id

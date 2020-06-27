@@ -7,7 +7,8 @@ from resource_management.interactors.storages.resources_storage_interface import
     StorageInterface
 from resource_management.exceptions.exceptions import (
     UserCannotManipulateException,
-    InvalidDetailsException
+    InvalidDetailsException,
+    InvalidIdException
     )
 
 
@@ -46,7 +47,6 @@ class StorageImplementation(StorageInterface):
         for resource_obj in resource_objs:
             resource_dto_list.append(
                 ResourceDto(
-                id=resource_obj.id,
                 image_url=resource_obj.image_url,
                 name=resource_obj.name,
                 item_name=resource_obj.item_name,
@@ -86,6 +86,8 @@ class StorageImplementation(StorageInterface):
 
         if is_admin:
             resources = Resource.objects.filter(id__in=resource_ids_list)
+            if not len(resources) == len(resource_ids_list):
+                raise InvalidIdException
             resources.delete()
 
         else:
@@ -99,7 +101,8 @@ class StorageImplementation(StorageInterface):
 
     def get_user_resources(self, user_id: int) -> List[Itemdto]:
 
-        items = Item.objects.filter(user_id=user_id).prefetch_related('resource','useraccess')
+        user = User.objects.get(id=user_id)
+        items = Item.objects.filter(user=user).prefetch_related('resource')
 
         items_list = []
         for item in items:
@@ -107,8 +110,7 @@ class StorageImplementation(StorageInterface):
                 id=item.id,
                 item_name=item.name,
                 link=item.link,
-                resource_name=item.resource.name,
-                access_level=item.useraccess.access_level
+                resource_name=item.resource.name
                 ))
         return items_list
 
@@ -116,6 +118,7 @@ class StorageImplementation(StorageInterface):
         for id in list_ids:
             if id <= 0 :
                 return False
+        return True
 
     def check_for_valid_offset(self, offset):
         if offset < 0:

@@ -37,7 +37,7 @@ def test_login(user_auth_tokens_dto,
         )
 
     presenter.get_login_response.return_value = login_response
-
+    storage.is_admin.return_value = role
     storage.validate_password.return_value = user_id
     oauth2_storage.get_or_create_default_application.return_value \
        = application_dto,True
@@ -62,7 +62,7 @@ def test_login(user_auth_tokens_dto,
         password=password
         )
     presenter.get_login_response.assert_called_once_with(
-        user_auth_tokens_dto,
+        access_token_dto_obj=user_auth_tokens_dto,
         role=role
         )
 

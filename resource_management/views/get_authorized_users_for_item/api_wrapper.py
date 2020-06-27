@@ -47,18 +47,16 @@ def api_wrapper(*args, **kwargs):
     limit = kwargs['request_query_params'].limit
     storage = StorageImplementation()
     presenter = PresenterImplementation()
-    try:
-        interactor = GetUsersForItems(
-            storage=storage,
-            presenter=presenter
+
+    interactor = GetUsersForItems(
+        storage=storage,
+        presenter=presenter
+        )
+    response_data = interactor.get_users_for_items_interactor(
+            item_id=item_id,
+            offset=offset,
+            limit=limit
             )
-        response_data = interactor.get_users_for_items_interactor(
-                item_id=item_id,
-                offset=offset,
-                limit=limit
-                )
-        data = json.dumps({'Users': response_data})
-        response = HttpResponse(data, status=200)
-    except InvalidIdException:
-        raise BadRequest(*INVALID_ID)
+    data = json.dumps({'Users': response_data})
+    response = HttpResponse(data, status=200)
     return response

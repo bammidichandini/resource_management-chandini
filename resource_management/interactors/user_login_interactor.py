@@ -68,4 +68,4 @@ class UserLoginInteractor:
             role=is_admin
             )
 
-        return response,
+        return response
