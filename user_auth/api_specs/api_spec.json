@@ -1,0 +1,96 @@
+{
+    "swagger": "2.0",
+    "host": "127.0.0.1:8000",
+    "basePath": "/api/user_auth/",
+    "info": {
+        "version": "1.0.0",
+        "title": "Simple API",
+        "description": "A simple API to learn how to write OpenAPI Specification"
+    },
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "securityDefinitions": {
+        "oauth": {
+            "tokenUrl": "http://auth.ibtspl.com/oauth2/",
+            "flow": "password",
+            "scopes": {
+                "read": "read users",
+                "write": "create users",
+                "update": "update users",
+                "delete": "delete users"
+            },
+            "type": "oauth2"
+        }
+    },
+    "security": [],
+    "definitions": {
+        "User": {
+            "type": "object",
+            "properties": {
+
+                "username": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "username",
+                "password"
+            ]
+        }
+    },
+    "parameters": {
+        "Login": {
+            "name": "person",
+            "in": "body",
+            "description": "The person to login.",
+            "schema": {
+                "$ref": "#/definitions/User"
+            }
+        }
+    },
+    "responses": {
+        "LoginResponse": {
+            "description": "Success Response",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "role": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    },
+    "paths": {
+        "/login/": {
+            "post": {
+                "operationId": "login",
+                "summary": "admin and user used to login",
+                "description": "admin and user used to login here and do the corresponding operations",
+                "parameters": [{
+                    "$ref": "#/parameters/Login"
+                }],
+                "responses": {
+                    "200": {
+                        "$ref": "#/responses/LoginResponse"
+
+                    },
+                    "403": {
+                        "description": "Invalid username or password"
+                    }
+                }
+            }
+
+        }
+    }
+}
