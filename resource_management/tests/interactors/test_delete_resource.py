@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import create_autospec
+from unittest.mock import create_autospec, patch
 from resource_management.exceptions.exceptions import (
     UserCannotManipulateException,
     InvalidIdException
@@ -9,17 +9,17 @@ from resource_management.interactors.presenters.presenter_interface import Prese
 from resource_management.interactors.delete_resource_interactor import DeleteResourcesInteractor
 
 
-def test_delete_resource():
+@pytest.mark.django_db
+@patch('resource_management.adapters.auth_service.AuthService.get_user_dtos')
+def test_delete_resource(get_user_dtos, user_dtos):
 
     #arrange
     resource_ids_list = [1,2,3]
     user_id = 1
 
+    get_user_dtos.return_value = user_dtos
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
-
-    storage.is_admin.return_value = True
-    storage.check_for_valid_input.return_value = True
 
     interactor = DeleteResourcesInteractor(
         storage=storage,
@@ -37,21 +37,20 @@ def test_delete_resource():
        user_id=user_id,
        resource_ids_list=resource_ids_list
         )
-    storage.is_admin.assert_called_once_with(user_id)
-    storage.check_for_valid_input.assert_called_once_with(resource_ids_list)
 
 
-def test_delete_resource_with_user():
+@pytest.mark.django_db
+@patch('resource_management.adapters.auth_service.AuthService.get_user_dtos')
+def test_delete_resource_with_user(get_user_dtos, user_dtos1):
 
     #arrange
     resource_ids_list = [1,2,3]
     user_id = 1
 
+    get_user_dtos.return_value = user_dtos1
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    storage.check_for_valid_input.return_value = True
-    storage.is_admin.return_value = False
     presenter.raise_user_cannot_manipulate_exception.side_effect = \
         UserCannotManipulateException
 
@@ -70,10 +69,12 @@ def test_delete_resource_with_user():
 
 
 
+@pytest.mark.django_db
 @pytest.mark.parametrize("resource_ids_list", [
-    ([-1,2,3]),([0,1,2])
+    ([20,2,3]),([100,1,2])
 ])
-def test_delete_resource_with_invalid_ids(resource_ids_list):
+@patch('resource_management.adapters.auth_service.AuthService.get_user_dtos')
+def test_delete_resource_with_invalid_ids(get_user_dtos, resource_ids_list, user_dtos1):
 
     #arrange
 
@@ -82,7 +83,7 @@ def test_delete_resource_with_invalid_ids(resource_ids_list):
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    storage.check_for_valid_input.return_value = False
+    get_user_dtos.return_value = user_dtos1
     presenter.raise_invalid_id_exception.side_effect = InvalidIdException
 
 
@@ -97,4 +98,3 @@ def test_delete_resource_with_invalid_ids(resource_ids_list):
             user_id=user_id,
             resource_ids_list=resource_ids_list
             )
-

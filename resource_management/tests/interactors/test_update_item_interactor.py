@@ -1,16 +1,20 @@
 import pytest
-from unittest.mock import create_autospec
+from unittest.mock import create_autospec, patch
 from resource_management.exceptions.exceptions import(
     UserCannotManipulateException,
     InvalidIdException
     )
+from django_swagger_utils.drf_server.exceptions import Forbidden, NotFound
 from resource_management.interactors.update_item_interactor import UpdateItemInteractor
 from resource_management.interactors.storages.item_storages import StorageInterface
 from resource_management.interactors.presenters.presenter_interface import PresenterInterface
 
 
 @pytest.mark.django_db
+@patch('resource_management.adapters.auth_service.AuthService.get_user_dtos')
 def test_update_item(
+    get_user_dtos,
+    user_dtos,
     item_dto
     ):
 
@@ -20,11 +24,13 @@ def test_update_item(
     user_id = 1
     expected_dto =  item_dto
 
+    get_user_dtos.return_value = user_dtos
+
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    storage.check_for_valid_input.return_value = True
-    storage.is_admin.return_value = True
+    # storage.check_for_valid_input.return_value = True
+    # storage.is_admin.return_value = True
     interactor = UpdateItemInteractor(
         storage=storage,
         presenter=presenter
@@ -43,12 +49,13 @@ def test_update_item(
         user_id=user_id,
         item_id=item_id
         )
-    storage.check_for_valid_input.assert_called_once_with([item_id])
-    storage.is_admin.assert_called_once_with(user_id)
 
 
 @pytest.mark.django_db
-def test_update_item_with_user_raises_execption(
+@patch('resource_management.adapters.auth_service.AuthService.get_user_dtos')
+def test_update_item_with_user_raises_exception(
+    get_user_dtos,
+    user_dtos1,
     item_dto
     ):
 
@@ -57,14 +64,16 @@ def test_update_item_with_user_raises_execption(
     item_id = 1
     user_id = 1
 
+    get_user_dtos.return_value = user_dtos1
 
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    storage.check_for_valid_input.return_value = True
-    storage.is_admin.return_value = False
+    storage.get_item_ids.return_value = [1,2]
+    # storage.check_for_valid_input.return_value = True
+    # storage.is_admin.return_value = False
     presenter.raise_user_cannot_manipulate_exception.side_effect = \
-        UserCannotManipulateException
+        Forbidden
 
     interactor = UpdateItemInteractor(
         storage=storage,
@@ -72,7 +81,7 @@ def test_update_item_with_user_raises_execption(
         )
 
     # act
-    with pytest.raises(UserCannotManipulateException):
+    with pytest.raises(Forbidden):
         interactor.update_item_interactor(
             user_id=user_id,
             item_id=item_id,
@@ -80,21 +89,24 @@ def test_update_item_with_user_raises_execption(
             )
 
 @pytest.mark.parametrize("item_id", [
-    (1),(0)
+    (100),(30)
 ])
-def test_update_item_with_invalid_input(item_id, item_dto):
+@patch('resource_management.adapters.auth_service.AuthService.get_user_dtos')
+def test_update_item_with_invalid_input(get_user_dtos, user_dtos, item_id, item_dto):
     # arrange
 
 
     user_id = 1
 
+    get_user_dtos.return_value = user_dtos
 
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    storage.check_for_valid_input.return_value = False
+    storage.get_item_ids.return_value = [1,2]
+
     presenter.raise_invalid_id_exception.side_effect = \
-        InvalidIdException
+        NotFound
 
     interactor = UpdateItemInteractor(
         storage=storage,
@@ -102,7 +114,7 @@ def test_update_item_with_invalid_input(item_id, item_dto):
         )
 
     # act
-    with pytest.raises(InvalidIdException):
+    with pytest.raises(NotFound):
         interactor.update_item_interactor(
             user_id=user_id,
             item_id=item_id,

@@ -8,8 +8,10 @@ from common.dtos import (
     )
 from resource_management.dtos.dtos import(
     ResourceDto,
+    RequestDto,
     ItemDto,
     RequestsDto,
+    userdto,
     UserDto,
     ResourceItemParametersDto,
     UpdateProfileDto,
@@ -26,7 +28,6 @@ from resource_management.constants.enums import (
 from django.contrib.auth.hashers import make_password
 
 
-from resource_management.models import User
 
 @pytest.fixture()
 def access_dto():
@@ -113,6 +114,7 @@ def item_dto():
         )
     return items_dto
 
+
 @pytest.fixture()
 def items_dto():
     items_dto = [ItemDto(
@@ -176,21 +178,24 @@ def requests():
 
 @pytest.fixture()
 def get_item_users():
-    item_users = [UserDto(
-            person_name="chandini",
-            department="engineer",
-            job_role="backend_developer",
+    item_users = [RequestDto(
+            id=1,
             access_level="Read")
         ]
     return item_users
 
 @pytest.fixture()
 def get_item_users_response():
-    response =[ {
+    response =[
+        {
+        "count": 3,
+        "users": {
         "person_name": "chandini",
         "department": "engineer",
         "job_role": "backend_developer",
-        "access_level": "Read"
+        "access_level": "Read",
+        "id": 1
+        }
     }]
     return response
 
@@ -204,36 +209,36 @@ def get_req_param():
     return param_dto
 
 
-@pytest.fixture()
-def create_users1():
-    users = [
-        {
-            "username": "madhuri",
-            "name": "madhuri",
-            "is_admin": "True",
-            "password": "madhuri",
-            "department": "engineer",
-            "job_role": "backend_developer"
-        },
-        {
-            "username": "chandini",
-            "name": "chandini",
-            "is_admin": "False",
-            "password": "chandini",
-            "department": "engineer",
-            "job_role": "backend_developer"
-        }
-    ]
+# @pytest.fixture()
+# def create_users1():
+#     users = [
+#         {
+#             "username": "madhuri",
+#             "name": "madhuri",
+#             "is_admin": "True",
+#             "password": "madhuri",
+#             "department": "engineer",
+#             "job_role": "backend_developer"
+#         },
+#         {
+#             "username": "chandini",
+#             "name": "chandini",
+#             "is_admin": "False",
+#             "password": "chandini",
+#             "department": "engineer",
+#             "job_role": "backend_developer"
+#         }
+#     ]
 
-    for user in users:
-        User.objects.create(
-            username=user["username"],
-            name=user["name"],
-            is_admin=user["is_admin"],
-            password=make_password(user["password"]),
-            department=user["department"],
-            job_role=user["job_role"]
-            ),
+#     for user in users:
+#         User.objects.create(
+#             username=user["username"],
+#             name=user["name"],
+#             is_admin=user["is_admin"],
+#             password=make_password(user["password"]),
+#             department=user["department"],
+#             job_role=user["job_role"]
+#             ),
 
 
 @pytest.fixture()
@@ -285,16 +290,11 @@ def update_profile_with_invalid_gender():
 def user_details():
     details = [
         RegisterUserDto(
+            id=1,
             person_name="madhuri",
             job_role="backend_developer",
             department="engineer",
-            url=""
-            ),
-        RegisterUserDto(
-            person_name="chandini",
-            job_role="backend_developer",
-            department="engineer",
-            url=""
+            profile_pic=""
             )
         ]
     return details
@@ -303,17 +303,13 @@ def user_details():
 @pytest.fixture()
 def user_response():
     get_response =[{
+        "id": 1,
         "person_name": "madhuri",
         "department": "engineer",
         "job_role": "backend_developer",
-        "url": ""
+        "profile_pic": ""
     },
-    {
-            "person_name": "chandini",
-            "department": "engineer",
-            "job_role": "backend_developer",
-            "url": ""
-        }
+
     ]
     return get_response
 
@@ -322,10 +318,7 @@ def user_response():
 def user_requests_dto():
     response = [
         IndividualUserRequestsDto(
-            person_name="chandini",
-            department="engineer",
-            job_role="backend_developer",
-            profile_pic="",
+            id=1,
             resource_name="aws",
             item_name="cloud",
             access_level="access_level",
@@ -456,4 +449,33 @@ def get_user_requests_dto_response():
             "status":"Pending"
         }
         ]
+    return response
+
+@pytest.fixture()
+def user_dtos():
+    response = [
+        userdto(
+            id=1,
+            person_name="chandini",
+            department="department",
+            profile_pic="chandini",
+            job_role="job_role",
+            is_admin=True
+        )
+    ]
+    return response
+
+
+@pytest.fixture()
+def user_dtos1():
+    response = [
+        userdto(
+            id=1,
+            person_name="chandini",
+            profile_pic="chandini",
+            department="department",
+            job_role="job_role",
+            is_admin=False
+        )
+    ]
     return response
