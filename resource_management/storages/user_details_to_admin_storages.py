@@ -3,7 +3,6 @@ from abc import abstractmethod
 from typing import List
 from common.dtos import UserAuthTokensDTO
 from resource_management.dtos.dtos import RegisterUserDto
-from resource_management.models import User
 from resource_management.interactors.storages.user_details_to_admin_storages \
   import StorageInterface
 

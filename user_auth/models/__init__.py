@@ -1,4 +1,9 @@
-__all__ = []
+from user_auth.models.user import User
+
+
+__all__ = [
+    "User"
+    ]
 
 # class DummyModel(AbstractDateTimeModel):
 #     """

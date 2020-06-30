@@ -18,7 +18,8 @@ from django_swagger_utils.drf_server.utils.general.import_app_settings import \
 
 THIRD_PARTY_APPS = []
 APPS = [
-    "resource_management"
+    "resource_management",
+    "user_auth"
 ]
 
 INSTALLED_APPS += THIRD_PARTY_APPS
@@ -61,7 +62,8 @@ SWAGGER_UTILS = {
         }
     },
     "APPS": {
-        "resource_management": {}
+        "resource_management": {},
+        "user_auth": {}
     },
     "HOST": os.environ.get('APIGATEWAY_ENDPOINT', '127.0.0.1:8000'),
 }
@@ -70,8 +72,8 @@ API_KEY_AUTHENTICATION_CLASS = \
     "ib_miniprojects_backend.common.authentication.APIKeyAuthentication"
 
 CUSTOM_EXCEPTIONS_TO_LOG_IN_SENTRY = []
-AUTH_USER_MODEL = 'resource_management.User'
-DEFAULT_OAUTH_APPLICATION_NAME = "resource_management"
+AUTH_USER_MODEL = 'user_auth.User'
+DEFAULT_OAUTH_APPLICATION_NAME = "user_auth"
 DEFAULT_OAUTH_CLIENT_ID = ""
 DEFAULT_OAUTH_CLIENT_SECRET = ""
 DEFAULT_OAUTH_SCOPES = "read write delete update superuser"

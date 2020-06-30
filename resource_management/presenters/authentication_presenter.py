@@ -8,8 +8,10 @@ from resource_management.constants.enums import TimeFormat
 from resource_management.dtos.dtos import (
     ResourceDto,
     RequestsDto,
+    RequestDto,
     UserDto,
     Itemdto,
+    userdto,
     RegisterUserDto,
     IndividualUserRequestsDto,
     ItemDto,
@@ -148,15 +150,21 @@ class PresenterImplementation(PresenterInterface):
 
     def get_user_for_items_response(
             self,
-            user_dto: UserDto):
-        user_dtos = user_dto.users
+            user_dtos: userdto,
+            request_dto: RequestDto,
+            count: int
+        ):
+        user_dict = {}
+        for user_dto in user_dtos:
+            user_dict[user_dto.id] = user_dto
+
         list_of_user = []
         for dto_obj in user_dtos:
             list_of_user .append( {
-                "id": dto_obj.id,
-                "person_name": dto_obj.person_name,
-                "department": dto_obj.department,
-                "job_role": dto_obj.job_role,
+                "id": user_dict[dto_obj.id].id,
+                "person_name": user_dict[dto_obj.id].person_name,
+                "department": user_dict[dto_obj.id].department,
+                "job_role": user_dict[dto_obj.id].job_role,
                 "access_level": dto_obj.access_level,
             })
         user_dict = {
@@ -193,16 +201,22 @@ class PresenterImplementation(PresenterInterface):
 
 
     def get_individual_user_details_to_admin_response(self,
-    user_requests_dto: List[IndividualUserRequestsDto]
+    user_requests_dto: List[IndividualUserRequestsDto],
+    user_dto: List[userdto]
+
     ):
+        user_dict = {}
+        for dto in user_dto:
+            user_dict[dto.id]=dto
+
         list_of_users = []
         for dto in user_requests_dto:
             list_of_users.append(
                 {
-                    "person_name": dto.person_name,
-                    "department":dto.department,
-                    "job_role":dto.job_role,
-                    "profile_pic":dto.profile_pic,
+                    "person_name": user_dict[dto].person_name,
+                    "department":user_dict[dto].department,
+                    "job_role":user_dict[dto].job_role,
+                    "profile_pic":user_dict[dto].profile_pic,
                     "resource_name":dto.resource_name,
                     "item_name":dto.item_name,
                     "access_level":dto.access_level,
@@ -245,5 +259,3 @@ class PresenterImplementation(PresenterInterface):
             "requests": request_dict_list
         }
         return result_dict
-
-

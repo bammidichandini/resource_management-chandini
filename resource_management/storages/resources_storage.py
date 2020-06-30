@@ -17,19 +17,13 @@ class StorageImplementation(StorageInterface):
                         resource_dto: ResourceDto,
                         user_id: int
                         ):
-        is_admin = self.is_admin_or_user(user_id=user_id)
-
-
-        if is_admin:
-            Resource.objects.create(
-                image_url=resource_dto.image_url,
-                name=resource_dto.name,
-                item_name=resource_dto.item_name,
-                link=resource_dto.link,
-                description=resource_dto.description
-                )
-        else:
-            raise UserCannotManipulateException
+        Resource.objects.create(
+            image_url=resource_dto.image_url,
+            name=resource_dto.name,
+            item_name=resource_dto.item_name,
+            link=resource_dto.link,
+            description=resource_dto.description
+            )
 
 
     def get_resources(self) -> List[ResourceDto]:
@@ -61,41 +55,28 @@ class StorageImplementation(StorageInterface):
                         resource_dto: ResourceDto,
                         user_id: int
                         ):
-        is_admin = self.is_admin_or_user(user_id=user_id)
-        if is_admin:
-
-           resources =  Resource.objects.filter(
-                id=resource_id
+       resources =  Resource.objects.filter(
+            id=resource_id
+            )
+       resources.update(
+                image_url=resource_dto.image_url,
+                name=resource_dto.name,
+                item_name=resource_dto.item_name,
+                link=resource_dto.link,
+                description=resource_dto.description
                 )
-           resources.update(
-                    image_url=resource_dto.image_url,
-                    name=resource_dto.name,
-                    item_name=resource_dto.item_name,
-                    link=resource_dto.link,
-                    description=resource_dto.description
-                    )
-        else:
-            raise UserCannotManipulateException
 
 
     def delete_resources(self,
                          user_id: int,
                          resource_ids_list: List[int]):
 
-        is_admin = self.is_admin_or_user(user_id=user_id)
+        resources = Resource.objects.filter(id__in=resource_ids_list)
+        resources.delete()
 
-        if is_admin:
-            resources = Resource.objects.filter(id__in=resource_ids_list)
-            resources.delete()
-
-        else:
-            raise UserCannotManipulateException
-
-    @staticmethod
-    def is_admin_or_user(user_id):
-        is_admin = User.objects.get(id=user_id).is_admin
-        return is_admin
-
+    def get_resource_ids(self):
+        resources = Resource.objects.values_list('id', flat=True)
+        return resources
 
     def get_user_resources(self, user_id: int) -> List[Itemdto]:
 
@@ -107,8 +88,7 @@ class StorageImplementation(StorageInterface):
                 id=item.id,
                 item_name=item.name,
                 link=item.link,
-                resource_name=item.resource.name,
-                access_level=item.useraccess.access_level
+                resource_name=item.resource.name
                 ))
         return items_list
 
@@ -121,7 +101,3 @@ class StorageImplementation(StorageInterface):
         if offset < 0:
             return False
         return True
-
-    def is_admin(self, user_id: int) -> List[int]:
-        is_admin = User.objects.get(id=user_id).is_admin
-        return is_admin

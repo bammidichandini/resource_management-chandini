@@ -4,6 +4,7 @@ from typing import List
 from resource_management.dtos.dtos import(
     ItemDto,
     UserDto,
+    RequestDto,
     RequestsDto,
     ResourceItemDto,
     itemdto,
@@ -12,7 +13,6 @@ from resource_management.dtos.dtos import(
     )
 from resource_management.models import (
     Resource,
-    User,
     Item
     )
 from resource_management.models.item import (
@@ -31,7 +31,6 @@ from resource_management.exceptions.exceptions import(
     )
 
 
-
 class StorageImplementation(StorageInterface):
 
     def create_item(
@@ -40,7 +39,7 @@ class StorageImplementation(StorageInterface):
         user_id: int
         ):
         resource = Resource.objects.get(name=item_dto.resource_name)
-        user = User.objects.get(id=user_id)
+
         item = Item.objects.create(
             name=item_dto.item_name,
             link=item_dto.link,
@@ -49,9 +48,8 @@ class StorageImplementation(StorageInterface):
             )
         UserAccess.objects.create(
             item_id=item.id,
-            user=user
+            user_id=user_id
         )
-
 
 
     def delete_items(
@@ -61,10 +59,8 @@ class StorageImplementation(StorageInterface):
         ):
 
         items = Item.objects.filter(id__in=item_ids_list)
-        if len(items) == 0:
-            raise ObjectDoesNotExist
-
         items.delete()
+        UserAccess.objects.filter(item_id__in=item_ids_list).delete()
 
 
     def update_item(
@@ -88,11 +84,6 @@ class StorageImplementation(StorageInterface):
             update(access_level=item_dto.access_level)
 
 
-    def is_admin(self, user_id: int) -> List[int]:
-        is_admin = User.objects.get(id=user_id).is_admin
-        return is_admin
-
-
     def get_resource_items(self, req_param_dto : ResourceItemParametersDto)\
                     -> ResourceItemDto:
 
@@ -105,6 +96,7 @@ class StorageImplementation(StorageInterface):
             resource_id=resource_id
             )
         return item_dto_list
+
 
     @staticmethod
     def convert_and_get_item_dto_objs_list(
@@ -136,6 +128,19 @@ class StorageImplementation(StorageInterface):
         return resource_dto
 
 
+    def get_user_ids(self, item_id: int, offset: int, limit: int) -> List[int]:
+        user_ids = Request.objects.filter(item_id=item_id).values_list(
+            'user_id', flat=True
+        )[offset: limit+offset]
+        return user_ids
+
+
+    def get_user_items_count(self, item_id: int, offset: int, limit: int) \
+        -> int:
+        count = Request.objects.filter(item_id=item_id).count()
+        return count
+
+
     def get_users_for_items(
         self,
         item_id: int,
@@ -143,24 +148,17 @@ class StorageImplementation(StorageInterface):
         limit: int
         ) -> List[UserDto]:
 
-        items = Item.objects.filter(id=item_id)
-        count = items.count()
-        userobjects = items.prefetch_related('user')
+        request_objs = Request.objects.filter(item_id=item_id)[offset: limit+offset]
+
         list_of_dtos = []
-        for user_obj in userobjects:
+        for request_obj in request_objs:
             list_of_dtos.append(
-                userdto(
-                id=user_obj.user.id,
-                person_name=user_obj.user.username,
-                department=user_obj.user.department,
-                job_role=user_obj.user.job_role,
-                access_level=user_obj.access_level
+                RequestDto(
+                id=request_obj.user.id,
+                access_level=request_obj.access_level
                 ))
-        user_dto = UserDto(
-            count=count,
-            users=list_of_dtos
-            )
-        return user_dto
+
+        return list_of_dtos
 
 
     def get_requests(self) -> List[RequestsDto]:
@@ -182,13 +180,20 @@ class StorageImplementation(StorageInterface):
                 )
         return list_of_requests
 
+
     def check_for_valid_input(self, list_ids: List[int]):
         for id in list_ids:
             if id <= 0 :
                 return False
         return True
 
+
     def check_for_valid_offset(self, offset):
         if offset < 0:
             return False
         return True
+
+
+    def get_item_ids(self):
+        items = Item.objects.values_list('id', flat=True)
+        return items

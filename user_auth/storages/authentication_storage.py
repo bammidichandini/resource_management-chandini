@@ -1,13 +1,13 @@
-from resource_management.models import User
+from typing import List
 from common.dtos import UserAuthTokensDTO
-from resource_management.exceptions.exceptions import (
+from user_auth.models import User
+from user_auth.dtos.dtos import userdto
+from user_auth.exceptions.exceptions import (
     InvalidUserException,
-    InvalidPasswordException,
-    UserAlreadyExistedException
+    InvalidPasswordException
     )
-from resource_management.interactors.storages.storage_interface import \
+from user_auth.interactors.storages.storage_interface import \
     StorageInterface
-
 from django.contrib.auth.hashers import make_password
 
 
@@ -61,3 +61,36 @@ class StorageImplementation(StorageInterface):
     def is_admin(self, user_id: int) -> bool:
         is_admin = User.objects.get(id=user_id).is_admin
         return is_admin
+
+    def get_user_details_dtos(self, user_ids: List[int]) \
+        -> List[userdto]:
+            user_dtos = []
+            users = User.objects.filter(id__in=user_ids)
+            for user in list(users):
+                user_dtos.append(userdto(
+                    id=user.id,
+                    person_name=user.name,
+                    department=user.department,
+                    job_role=user.job_role,
+                    is_admin=user.is_admin
+                ))
+            return user_dtos
+
+    def get_user_ids(self) -> List[int]:
+        users = User.objects.all().values_list('id', flat=True)
+        return users
+
+    def get_all_user_details_to_admin(self):
+        users = User.objects.filter(is_admin=False)
+        user_dtos = []
+        for user in list(users):
+            user_dtos.append(
+                userdto(
+                    id=user.id,
+                    person_name=user.name,
+                    department=user.department,
+                    job_role=user.job_role,
+                    profile_pic=user.profile_pic,
+                    is_admin=user.is_admin
+                )
+            )

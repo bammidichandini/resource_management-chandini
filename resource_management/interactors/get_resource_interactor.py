@@ -22,6 +22,6 @@ class GetResourcesInteractor:
 
         response = self.presenter.get_resources_response(
             resources_dto_list = resources_dto_list
-            )
+        )
 
         return response

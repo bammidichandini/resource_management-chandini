@@ -57,9 +57,6 @@ class StorageInterface(ABC):
     def get_user_requests(self, user_id: int, offset, limit) -> getuserrequestsdto:
         pass
 
-    @abstractmethod
-    def is_admin(self, user_id: int) -> bool:
-        pass
 
     @abstractmethod
     def check_for_valid_input(self, item_ids_list: List[int]) -> bool:
@@ -68,3 +65,7 @@ class StorageInterface(ABC):
     @abstractmethod
     def check_for_valid_offset(self, offset):
        pass
+
+    @abstractmethod
+    def get_request_ids(self) -> List[int]:
+        pass

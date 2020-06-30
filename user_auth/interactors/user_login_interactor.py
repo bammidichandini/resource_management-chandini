@@ -1,11 +1,11 @@
 from common.dtos import UserAuthTokensDTO
 from common.oauth2_storage import OAuth2SQLStorage
 from common.oauth_user_auth_tokens_service import OAuthUserAuthTokensService
-from resource_management.storages.authentication_storage \
+from user_auth.storages.authentication_storage \
     import StorageImplementation
-from resource_management.presenters.authentication_presenter \
+from user_auth.presenters.authentication_presenter \
     import PresenterImplementation
-from resource_management.exceptions.exceptions \
+from user_auth.exceptions.exceptions \
     import InvalidUserException, InvalidPasswordException
 
 

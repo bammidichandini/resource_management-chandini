@@ -52,7 +52,12 @@ class StorageInterface(ABC):
         pass
 
     @abstractmethod
-    def get_users_for_items(self, item_id: int) -> UserDto:
+    def get_users_for_items(
+        self,
+        item_id: int,
+        offset: int,
+        limit: int
+    ) -> UserDto:
         pass
 
     @abstractmethod
@@ -61,4 +66,25 @@ class StorageInterface(ABC):
 
     @abstractmethod
     def check_for_valid_input(self, item_ids_list: List[int]):
+        pass
+
+    @abstractmethod
+    def get_item_ids(self):
+        pass
+
+    @abstractmethod
+    def get_user_ids(
+        self,
+        item_id: int,
+        offset: int,
+        limit: int
+    ) -> List[int]:
+        pass
+
+    @abstractmethod
+    def get_user_items_count(
+        self,
+        item_id: int,
+        offset: int,
+        limit: int) -> int:
         pass

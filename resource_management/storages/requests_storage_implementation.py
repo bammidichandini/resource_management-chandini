@@ -21,7 +21,6 @@ from resource_management.dtos.dtos import (
     CreateUserRequestsDto,
     GetUserRequestsDto
     )
-from resource_management.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from resource_management.constants.enums import RequestStatus
 from resource_management.interactors.storages.requests_storage_interface \
@@ -42,20 +41,15 @@ class StorageImplementation(StorageInterface):
         requests.update(status=status,reason=reason)
         if status == "Accepted":
             for request in requests:
-                UserAccess.objects.create(user=request.user,item=request.item,access_level=request.access_level)
-
-
+                UserAccess.objects.create(user=request.user_id,item=request.item,access_level=request.access_level)
 
     def get_individual_user_details_to_admin(self, user_id: int):
 
-        user_items = Request.objects.filter(user_id=user_id).prefetch_related('item','resource','user')
+        user_items = Request.objects.filter(user_id=user_id).prefetch_related('item','resource')
         items_list = []
         for item in user_items:
             items_list.append(IndividualUserRequestsDto(
-                person_name=item.user.name,
-                department=item.user.department,
-                job_role=item.user.job_role,
-                profile_pic=item.user.profile_pic,
+                user_id=item.user_id,
                 resource_name=item.resource.name,
                 item_name=item.item.name,
                 access_level=item.access_level,
@@ -146,11 +140,11 @@ class StorageImplementation(StorageInterface):
                 return False
         return True
 
-    def is_admin(self, user_id: int) -> bool:
-        is_admin = User.objects.get(id=user_id).is_admin
-        return is_admin
-
     def check_for_valid_offset(self, offset):
         if offset < 0:
             return False
         return True
+
+    def get_request_ids(self):
+        requests = Request.objects.values_list('id', flat=True)
+        return requests

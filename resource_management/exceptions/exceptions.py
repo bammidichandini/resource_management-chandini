@@ -20,3 +20,4 @@ class InvalidIdException(Exception):
 
 class InvalidDetailsException(Exception):
     pass
+

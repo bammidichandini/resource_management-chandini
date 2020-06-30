@@ -3,7 +3,6 @@ from resource_management.models import *
 from resource_management.models.item import *
 
 
-admin.site.register(User)
 admin.site.register(Request)
 admin.site.register(Item)
 admin.site.register(UserAccess)
