@@ -30,9 +30,11 @@ class GetUserRequestsInteractor:
         valid_input = self.storage.check_for_valid_input(list_ids)
         invalid_input = not valid_input
 
+        # print(invalid_input, "H")
         valid_offset = self.storage.check_for_valid_offset(offset)
         invalid_offset = not valid_offset
 
+        # print(invalid_offset, "G")
         if invalid_offset or invalid_input:
             self.presenter.raise_invalid_id_exception()
 

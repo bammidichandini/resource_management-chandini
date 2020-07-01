@@ -12,7 +12,6 @@ from resource_management.interactors.get_user_resources_interactor \
 def test_get_user_resource(
     items_dto,
     get_item,
-    create_users1
 ):
 
     # arrange

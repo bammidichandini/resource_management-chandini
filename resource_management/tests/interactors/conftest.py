@@ -83,6 +83,7 @@ def login_response():
 @pytest.fixture()
 def resource_dto():
     resource_dtos = [ResourceDto(
+    id=1,
     image_url="aws/cloud/aws.png",
     name= "aws",
     item_name= "cloud_services",
@@ -431,6 +432,7 @@ def add_request_dto_invalid_reason():
 @pytest.fixture()
 def get_user_requests_dto():
     response = [GetUserRequestsDto(
+            id=1,
             resource_name="aws",
             item_name="service",
             access_level="Read",
