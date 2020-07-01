@@ -1,5 +1,5 @@
 from resource_management.models \
-    import User, Resource, Item
+    import  Resource, Item
 from resource_management.models.item import \
     UserAccess, Request
 import datetime
@@ -14,54 +14,19 @@ from resource_management.dtos.dtos import (
     ResourceItemDto, UserDto,
     ResourceItemParametersDto,
     UpdateProfileDto,
+    itemdto,
     RegisterUserDto,
+    RequestDto,
     RequestsUpdateDto,
     IndividualUserRequestsDto,
     CreateUserRequestsDto,
-    GetUserRequestsDto
+    GetUserRequestsDto, getuserrequestsdto
     )
 import pytest
 
 
 @pytest.fixture()
-def create_users():
-    users = [
-        {
-            "username": "madhuri",
-            "name": "madhuri",
-            "is_admin": "True",
-            "password": "madhuri",
-            "profile_pic": "profile_pic_url1",
-            "department": "engineer",
-            "job_role": "backend_developer"
-        },
-        {
-            "username": "chandini",
-            "name": "chandini",
-            "is_admin": "False",
-            "password": "chandini",
-            "profile_pic": "profile_pic_url2",
-            "department": "engineer",
-            "job_role": "backend_developer"
-        }
-    ]
-
-    User.objects.create_user(
-        [
-            User(username=user["username"],
-            password=make_password(user["password"]),
-            name=user["name"],
-            profile_pic=user["profile_pic"],
-            department=user["department"],
-            job_role=user["job_role"]
-            )
-            for user in users
-        ]
-    )
-
-@pytest.fixture()
-def create_items(create_resources,
-                 create_users1
+def create_items(create_resources
                  ):
     items = [
         {
@@ -70,9 +35,16 @@ def create_items(create_resources,
         "resource_name": "aws",
         "description": "service provided by aws",
 
+        },
+        {
+        "item_name": "chandini",
+        "link": "https://www.aws.in/cloud_services",
+        "resource_name": "chandini",
+        "description": "service provided by aws",
+
         }
         ]
-    resource = Resource.objects.get(id=1)
+    resource = Resource.objects.get(id=2)
     for item in items:
         Item.objects.create(
             name=item["item_name"],
@@ -84,19 +56,18 @@ def create_items(create_resources,
 
 
 @pytest.fixture()
-def create_useraccess(create_users1,create_items):
+def create_useraccess(create_items):
 
-    user = User.objects.get(id=1)
     access = [
         {
-            "user": user,
+            "user_id": 1,
             "item_id": 1,
             "access_level": "Read",
         }
         ]
     for aces in access:
         UserAccess.objects.create(
-            user=aces["user"],
+            user_id=aces["user_id"],
             item_id=aces["item_id"],
             access_level=aces["access_level"]
             )
@@ -106,17 +77,23 @@ def create_requests(create_useraccess):
     requests = [
         {
             "item": 1,
+            "user": 1,
+            "resource": 1,
             "duration": datetime.datetime(2019, 4, 22, 0, 0),
             "status": RequestStatus.Pending.value,
-            "reason": "want to access"
+            "reason": "want to access",
+            "access_level": "Read"
         }
         ]
     for request in requests:
         Request.objects.create(
+                user_id=request["user"],
+                resource_id=request["resource"],
                 item_id=request["item"],
                 duration=request["duration"],
                 reason=request["reason"],
-                status=request["status"]
+                status=request["status"],
+                access_level=request["access_level"]
                 )
 
 @pytest.fixture()
@@ -125,6 +102,13 @@ def create_resources():
         {
             "image_url": "aws/cloud/aws.png",
             "name": "aws",
+            "item_name": "cloud_services",
+            "link": "https://www.aws.com",
+            "description": "it provides cloud services"
+        },
+        {
+            "image_url": "aws/cloud/aws.png",
+            "name": "amazon",
             "item_name": "cloud_services",
             "link": "https://www.aws.com",
             "description": "it provides cloud services"
@@ -169,74 +153,85 @@ def request_response():
 @pytest.fixture()
 def resource_dto():
     resource_dtos = [ResourceDto(
+    id=1,
     image_url="aws/cloud/aws.png",
     name= "aws",
     item_name= "cloud_services",
     link= "https://www.aws.com",
     description= "it provides cloud services"
-    )]
+    ),
+    ResourceDto(
+    id=2,
+    image_url="aws/cloud/aws.png",
+    name= "amazon",
+    item_name= "cloud_services",
+    link= "https://www.aws.com",
+    description= "it provides cloud services"
+    )
+    ]
     return resource_dtos
 
 @pytest.fixture()
 def resource_dtos():
     resource_dtos = ResourceDto(
+    id=1,
     image_url="https://www.github.com",
-    name= "amazon",
+    name= "aws1",
     item_name= "cloud_services",
     link= "https://www.aws.com",
     description= "cloud service"
     )
     return resource_dtos
 
-@pytest.fixture()
-def create_users1():
-    users = [
-        {
-            "username": "madhuri",
-            "name": "madhuri",
-            "is_admin": "True",
-            "password": "madhuri",
-            "department": "engineer",
-            "job_role": "backend_developer"
-        },
-        {
-            "username": "chandini",
-            "name": "chandini",
-            "is_admin": "False",
-            "password": "chandini",
-            "department": "engineer",
-            "job_role": "backend_developer"
-        }
-    ]
+# @pytest.fixture()
+# def create_users1():
+#     users = [
+#         {
+#             "username": "madhuri",
+#             "name": "madhuri",
+#             "is_admin": "True",
+#             "password": "madhuri",
+#             "department": "engineer",
+#             "job_role": "backend_developer"
+#         },
+#         {
+#             "username": "chandini",
+#             "name": "chandini",
+#             "is_admin": "False",
+#             "password": "chandini",
+#             "department": "engineer",
+#             "job_role": "backend_developer"
+#         }
+#     ]
 
-    for user in users:
-        User.objects.create(
-            username=user["username"],
-            name=user["name"],
-            is_admin=user["is_admin"],
-            password=make_password(user["password"]),
-            department=user["department"],
-            job_role=user["job_role"]
-            ),
+#     for user in users:
+#         User.objects.create(
+#             username=user["username"],
+#             name=user["name"],
+#             is_admin=user["is_admin"],
+#             password=make_password(user["password"]),
+#             department=user["department"],
+#             job_role=user["job_role"]
+#             ),
 
 
-@pytest.fixture()
-def item_dto():
-    items_dto = [ResourceItemDto(
-        item_name="cloud",
-        link="https://www.aws.in/cloud_services",
-        description="service provided by aws"
-        )]
-    return items_dto
+# @pytest.fixture()
+# def item_dto():
+#     items_dto = [ResourceItemDto(
+#         item_name="cloud",
+#         link="https://www.aws.in/cloud_services",
+#         description="service provided by aws"
+#         )]
+#     return items_dto
 
-@pytest.fixture()
-def item_dtos():
-    items_dto = ResourceItemDto(
-        item_name="cloud",
-        link="https://www.aws.in/cloud_services",
-        description="service provided by aws"
-        )
-    return items_dto
+# @pytest.fixture()
+# def item_dtos():
+#     items_dto = ResourceItemDto(
+#         item_name="cloud",
+#         link="https://www.aws.in/cloud_services",
+#         description="service provided by aws"
+#         )
+#     return items_dto
 
 @pytest.fixture()
 def reitem_dto():
@@ -244,8 +239,7 @@ def reitem_dto():
         item_name="cloud",
         link="https://www.aws.in/cloud_services",
         description="service provided by aws",
-        resource_name="aws",
-        access_level="Read"
+        resource_name="aws"
         )]
     return items_dto
 
@@ -255,18 +249,15 @@ def reitems_dto():
         item_name="cloud",
         link="https://www.aws.in/cloud_services",
         description="service provided by aws",
-        resource_name="aws",
-        access_level="Read"
+        resource_name="aws"
         )
     return items_dto
 
 
 @pytest.fixture()
 def get_item_users():
-    item_users = [UserDto(
-            person_name="madhuri",
-            department="engineer",
-            job_role="backend_developer",
+    item_users = [RequestDto(
+            id=1,
             access_level="Read")
         ]
     return item_users
@@ -274,12 +265,11 @@ def get_item_users():
 @pytest.fixture()
 def get_requests():
     request_dto = [RequestsDto(
-        name="madhuri",
+        user_id=1,
         access_level=AccessLevel.Read.value,
         duedatetime=datetime.datetime(2019, 4, 22, 0, 0),
         resource_name="aws",
         item_name="cloud",
-        url="image_url",
         id=1,
         )]
     return request_dto
@@ -287,7 +277,7 @@ def get_requests():
 @pytest.fixture()
 def get_req_param():
     param_dto = ResourceItemParametersDto(
-        resource_id=1,
+        resource_id=2,
         offset=0,
         limit=1
         )
@@ -355,10 +345,7 @@ def user_details():
 @pytest.fixture()
 def user_requests_dto():
     response = [IndividualUserRequestsDto(
-            person_name="madhuri",
-            department="engineer",
-            job_role="backend_developer",
-            profile_pic="",
+            id=1,
             resource_name="aws",
             item_name="cloud",
             access_level="Read",
@@ -375,8 +362,17 @@ def items_dto():
         item_name="cloud",
         link="https://www.aws.in/cloud_services",
         resource_name="aws",
-        description="service provided by aws",
-        access_level=AccessLevel.Read.value
+        description="service provided by aws"
+        )]
+    return items_dto
+
+@pytest.fixture()
+def items_dto1():
+    items_dto = [itemdto(
+        id=1,
+        item_name="cloud",
+        link="https://www.aws.in/cloud_services",
+        resource="aws",
         )]
     return items_dto
 
@@ -384,6 +380,7 @@ def items_dto():
 @pytest.fixture()
 def request_update_dto():
     response = RequestsUpdateDto(
+        id=1,
         access_level="Write",
         duedatetime=datetime.datetime(2019, 3, 1, 0, 0),
         remarks="accept your access",
@@ -399,64 +396,22 @@ def add_request_dto():
     response = CreateUserRequestsDto(
             access_level="Read",
             duedatetime=datetime.datetime(2019, 3, 1, 0, 0),
-            resource_name="aws",
+            resource_name="amazon",
             item_name="cloud",
             access_reason="want"
-    )
-    return response
-
-@pytest.fixture()
-def add_request_dto_invalid_access_level():
-    response = CreateUserRequestsDto(
-            access_level=1,
-            duedatetime=datetime.datetime(2019, 3, 1, 0, 0),
-            resource_name="aws",
-            item_name="service",
-            access_reason="want"
-    )
-    return response
-
-@pytest.fixture()
-def add_request_dto_invalid_resource():
-    response = CreateUserRequestsDto(
-            access_level="Read",
-            duedatetime=datetime.datetime(2019, 3, 1, 0, 0),
-            resource_name=1,
-            item_name="service",
-            access_reason="want"
-    )
-    return response
-
-@pytest.fixture()
-def add_request_dto_invalid_item():
-    response = CreateUserRequestsDto(
-            access_level="Read",
-            duedatetime=datetime.datetime(2019, 3, 1, 0, 0),
-            resource_name="aws",
-            item_name=1,
-            access_reason="want"
-    )
-    return response
-
-@pytest.fixture()
-def add_request_dto_invalid_reason():
-    response = CreateUserRequestsDto(
-            access_level="Read",
-            duedatetime=datetime.datetime(2019, 4, 22, 0, 0),
-            resource_name="aws",
-            item_name="service",
-            access_reason=1
     )
     return response
 
 @pytest.fixture()
 def get_user_requests_dto():
-    response = [GetUserRequestsDto(
+    response = getuserrequestsdto(
+            count=3,
+            requests=[GetUserRequestsDto(id=1,
             resource_name="aws",
             item_name="cloud",
             access_level="Read",
-            status="Pending"
-        )]
+            status="Pending")]
+        )
     return response
 
 
@@ -471,3 +426,23 @@ def get_user_requests_dto_response():
         }
         ]
     return response
+
+@pytest.fixture
+def item_dto():
+    response = ResourceItemDto(
+        id=2,
+        resource_name="amazon",
+        link="https://www.aws.com",
+        description="it provides cloud services",
+        image_url="aws/cloud/aws.png",
+        item=[  itemdto(
+            id=1,
+            item_name="cloud",
+            link="https://www.aws.in/cloud_services",
+            resource="amazon"
+            )],
+        items_count=2
+    )
+    return response
+
+

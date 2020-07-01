@@ -155,13 +155,12 @@ def get_item():
 @pytest.fixture()
 def get_requests():
     request_dto = [RequestsDto(
-        name="chandini",
         access_level=AccessLevel.Read.value,
         duedatetime=datetime.datetime(2019, 4, 22, 0, 0),
         resource_name="aws",
         item_name="cloud",
         id=1,
-        url="https//www.aws.com"
+        user_id=1
             )]
     return request_dto
 

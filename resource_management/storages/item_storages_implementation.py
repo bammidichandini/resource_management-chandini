@@ -80,8 +80,8 @@ class StorageImplementation(StorageInterface):
                 resource=resource,
                 description=item_dto.description
                 )
-        UserAccess.objects.filter(item_id=item_id, user_id=user_id).\
-            update(access_level=item_dto.access_level)
+        # UserAccess.objects.filter(item_id=item_id, user_id=user_id).\
+        #     update(access_level=item_dto.access_level)
 
 
     def get_resource_items(self, req_param_dto : ResourceItemParametersDto)\
@@ -113,7 +113,8 @@ class StorageImplementation(StorageInterface):
                 id=item_obj.id,
                 item_name=item_obj.name,
                 link=item_obj.link,
-                description=item_obj.description
+                # description=item_obj.description
+                resource=resource.name
                 )
                 )
         resource_dto = ResourceItemDto(
@@ -146,7 +147,7 @@ class StorageImplementation(StorageInterface):
         item_id: int,
         offset: int,
         limit: int
-        ) -> List[UserDto]:
+        ) -> List[RequestDto]:
 
         request_objs = Request.objects.filter(item_id=item_id)[offset: limit+offset]
 
@@ -154,7 +155,7 @@ class StorageImplementation(StorageInterface):
         for request_obj in request_objs:
             list_of_dtos.append(
                 RequestDto(
-                id=request_obj.user.id,
+                id=request_obj.user_id,
                 access_level=request_obj.access_level
                 ))
 
@@ -163,35 +164,21 @@ class StorageImplementation(StorageInterface):
 
     def get_requests(self) -> List[RequestsDto]:
 
-        requests = Request.objects.filter(status=RequestStatus.Pending.value).prefetch_related('user','item','resource')
+        requests = Request.objects.filter(status=RequestStatus.Pending.value).prefetch_related('item','resource')
         list_of_requests = []
 
         for request in requests:
             list_of_requests.append(
                 RequestsDto(
                     id = request.id,
-                    name=request.user.username,
+                    user_id=request.user_id,
                     access_level=request.access_level,
                     duedatetime=request.duration,
                     resource_name=request.resource.name,
-                    item_name=request.item.name,
-                    url=request.user.profile_pic
+                    item_name=request.item.name
                     )
                 )
         return list_of_requests
-
-
-    def check_for_valid_input(self, list_ids: List[int]):
-        for id in list_ids:
-            if id <= 0 :
-                return False
-        return True
-
-
-    def check_for_valid_offset(self, offset):
-        if offset < 0:
-            return False
-        return True
 
 
     def get_item_ids(self):

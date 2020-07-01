@@ -21,3 +21,6 @@ class InvalidIdException(Exception):
 class InvalidDetailsException(Exception):
     pass
 
+class InvalidInputException(Exception):
+    pass
+

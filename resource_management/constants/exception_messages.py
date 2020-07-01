@@ -23,7 +23,7 @@ EXISTED_USER = (
     "USER_EXISTED"
     )
 
-INVALID_ID = (
+INVALID_INPUT = (
     "Id must be positive integer and not too be zero",
     "INVALID_ID"
     )
@@ -32,3 +32,8 @@ INVALID_DETAILS = (
     "the details need to be valid, Please give valid details",
     "INVALID_DETAILS"
     )
+
+INVALID_ID = (
+    "The id doesn't exist ",
+    "INVALID_ID"
+)

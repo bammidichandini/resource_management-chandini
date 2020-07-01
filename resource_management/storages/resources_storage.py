@@ -1,6 +1,6 @@
 from typing import List
-from resource_management.models import Resource, User, Item, UserAccess
-from resource_management.dtos.dtos import ResourceDto, ItemDto, Itemdto
+from resource_management.models import Resource, Item, UserAccess, Request
+from resource_management.dtos.dtos import ResourceDto, ItemDto, Itemdto, itemdto
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Prefetch
 from resource_management.interactors.storages.resources_storage_interface import \
@@ -78,26 +78,17 @@ class StorageImplementation(StorageInterface):
         resources = Resource.objects.values_list('id', flat=True)
         return resources
 
-    def get_user_resources(self, user_id: int) -> List[Itemdto]:
+    def get_user_resources(self, user_id: int) -> List[itemdto]:
 
-        items = Item.objects.filter(user_id=user_id).prefetch_related('resource','useraccess')
+        requests = Request.objects.filter(user_id=user_id).prefetch_related('item', 'resource')
 
         items_list = []
-        for item in items:
-            items_list.append(Itemdto(
-                id=item.id,
-                item_name=item.name,
-                link=item.link,
-                resource_name=item.resource.name
+        for request in requests:
+            items_list.append(itemdto(
+                id=request.item.id,
+                item_name=request.item.name,
+                link=request.item.link,
+                resource=request.resource.name
                 ))
         return items_list
 
-    def check_for_valid_input(self, list_ids: List[int]):
-        for id in list_ids:
-            if id <= 0 :
-                return False
-
-    def check_for_valid_offset(self, offset):
-        if offset < 0:
-            return False
-        return True

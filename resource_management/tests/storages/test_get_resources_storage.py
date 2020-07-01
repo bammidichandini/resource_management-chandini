@@ -14,4 +14,4 @@ def test_get_resources(resource_dto, create_resources):
     resources_list = storage.get_resources()
 
     #assert
-    assert expected_dto_list[0].name == resources_list[0].name
+    assert expected_dto_list == resources_list

@@ -1,5 +1,4 @@
-from resource_management.exceptions.exceptions \
-    import InvalidDetailsException
+
 from resource_management.interactors.storages.requests_storage_interface \
     import StorageInterface
 from resource_management.interactors.presenters.presenter_interface \
@@ -25,18 +24,19 @@ class GetUserRequestsInteractor:
         limit: int
     ):
 
-        list_ids = [limit]
 
-        valid_input = self.storage.check_for_valid_input(list_ids)
-        invalid_input = not valid_input
+        if limit <=0 or offset<0:
+            self.presenter.raise_invalid_input_exception()
+        # valid_input = self.storage.check_for_valid_input(list_ids)
+        # invalid_input = not valid_input
 
         # print(invalid_input, "H")
-        valid_offset = self.storage.check_for_valid_offset(offset)
-        invalid_offset = not valid_offset
+        # valid_offset = self.storage.check_for_valid_offset(offset)
+        # invalid_offset = not valid_offset
 
         # print(invalid_offset, "G")
-        if invalid_offset or invalid_input:
-            self.presenter.raise_invalid_id_exception()
+        # if invalid_offset or invalid_input:
+        #     self.presenter.raise_invalid_id_exception()
 
         user_dto = self.storage.get_user_requests(
             user_id=user_id,

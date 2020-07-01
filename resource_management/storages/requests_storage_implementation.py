@@ -41,7 +41,7 @@ class StorageImplementation(StorageInterface):
         requests.update(status=status,reason=reason)
         if status == "Accepted":
             for request in requests:
-                UserAccess.objects.create(user=request.user_id,item=request.item,access_level=request.access_level)
+                UserAccess.objects.create(user_id=request.user_id,item=request.item,access_level=request.access_level)
 
     def get_individual_user_details_to_admin(self, user_id: int):
 
@@ -75,10 +75,10 @@ class StorageImplementation(StorageInterface):
                     duration=update_dto.duedatetime,
                     reason=update_dto.access_reason,
                     remarks=update_dto.remarks,
-                    access_llevel=update_dto.access_level
+                    access_level=update_dto.access_level
                 )
 
-            UserAccess.objects.filter(item=item,resource=resource,user_id=user_id).update(
+            UserAccess.objects.filter(item=item, user_id=user_id).update(
                 access_level=update_dto.access_level,
                 item=item,
                 user_id=user_id
@@ -133,17 +133,6 @@ class StorageImplementation(StorageInterface):
             requests=user_dto
             )
         return request_dto
-
-    def check_for_valid_input(self, list_ids: List[int]) -> bool:
-        for id in list_ids:
-            if id <= 0 :
-                return False
-        return True
-
-    def check_for_valid_offset(self, offset):
-        if offset < 0:
-            return False
-        return True
 
     def get_request_ids(self):
         requests = Request.objects.values_list('id', flat=True)

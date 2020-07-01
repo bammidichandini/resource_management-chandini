@@ -18,4 +18,4 @@ def test_get_resource_repsonse(resource_dto,
         )
 
     #assert
-    assert actual_dto[0] == get_resources_response[0]
+    assert actual_dto == get_resources_response

@@ -50,13 +50,11 @@ class UserDto:
 @dataclass
 class RequestsDto:
     id: Optional[int]
-    name: str
+    user_id: int
     access_level: AccessLevel
     duedatetime: datetime.datetime
     resource_name: str
     item_name: str
-    url: str
-    id: int
 
 @dataclass
 class RequestsUpdateDto:
@@ -73,8 +71,8 @@ class itemdto:
     id: Optional[int]
     item_name: str
     link: str
-    description: str
-
+    # description: str
+    resource: str
 
 @dataclass
 class ResourceItemDto:

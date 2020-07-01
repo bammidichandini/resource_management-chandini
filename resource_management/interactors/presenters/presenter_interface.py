@@ -65,7 +65,7 @@ class PresenterInterface(ABC):
     @abstractmethod
     def get_user_for_items_response(
             self,
-            request_dto: RequestDto,
+            request_dto: List[RequestDto],
             user_dtos: userdto,
             count: int
     ):
@@ -74,8 +74,8 @@ class PresenterInterface(ABC):
     @abstractmethod
     def get_requests_response(
         self,
-        request_dto: List[RequestsDto],
-
+        user_dtos: List[userdto],
+        request_dto: List[RequestsDto]
         ):
         pass
 
@@ -111,4 +111,8 @@ class PresenterInterface(ABC):
 
     @abstractmethod
     def get_user_requests_response(self, user_dto: getuserrequestsdto):
+        pass
+
+    @abstractmethod
+    def raise_invalid_input_exception(self):
         pass

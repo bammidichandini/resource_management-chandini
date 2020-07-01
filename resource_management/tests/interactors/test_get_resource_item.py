@@ -31,8 +31,6 @@ def test_get_resource_item(
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    storage.check_for_valid_input.return_value = True
-    storage.check_for_valid_offset.return_value = True
     storage.get_resource_items.return_value = item_dto
     presenter.get_resource_items_response.return_value = get_item
 

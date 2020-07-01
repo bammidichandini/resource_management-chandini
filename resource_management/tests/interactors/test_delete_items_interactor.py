@@ -119,7 +119,6 @@ def test_delete_items_with_user_raises_exception(get_user_dtos, user_dtos1):
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    storage.check_for_valid_input.return_value = True
     presenter.raise_user_cannot_manipulate_exception.side_effect = \
         UserCannotManipulateException
 

@@ -7,10 +7,13 @@ from common.dtos import (
     Application
     )
 from resource_management.dtos.dtos \
-    import ResourceDto, ItemDto, UserDto, RequestsDto, RegisterUserDto, IndividualUserRequestsDto, GetUserRequestsDto
+    import (
+        ResourceDto, RequestDto, ItemDto, UserDto, userdto, RequestsDto,
+        RegisterUserDto, IndividualUserRequestsDto, GetUserRequestsDto,
+        getuserrequestsdto, Itemdto
+    )
 from resource_management.constants.enums import AccessLevel
 from resource_management.constants.enums import TimeFormat
-from resource_management.models import User
 
 format = TimeFormat.FORMAT.value
 
@@ -55,6 +58,7 @@ def user_auth_tokens_dto():
 @pytest.fixture()
 def resource_dto():
     resource_dtos = [ResourceDto(
+    id=1,
     image_url="aws/cloud/aws.png",
     name= "aws",
     item_name= "cloud_services",
@@ -65,12 +69,12 @@ def resource_dto():
 
 @pytest.fixture()
 def item_dto():
-    items_dto =[ItemDto(
+    items_dto =[Itemdto(
+        id=1,
         item_name="cloud",
         link="https://www.aws.in/cloud_services",
         resource_name="aws",
-        description="service provided by aws",
-        access_level=AccessLevel.Read.value
+        access_level="Read"
         )]
     return items_dto
 
@@ -79,7 +83,7 @@ def item_dto():
 def get_resources_response():
 
     get_resources_response =[ {
-
+        "id": 1,
         "image_url":"aws/cloud/aws.png",
         "name": "aws",
         "item_name": "cloud_services",
@@ -148,13 +152,12 @@ def requests():
 @pytest.fixture()
 def get_requests():
     request_dto = [RequestsDto(
-        name="chandini",
         access_level=AccessLevel.Read.value,
         duedatetime=datetime.datetime(2019, 4, 22, 0, 0),
         resource_name="aws",
         item_name="cloud",
         id=1,
-        url="https//www.aws.com"
+        user_id=1
             )]
     return request_dto
 
@@ -165,7 +168,7 @@ def user_response():
             "person_name": "chandini",
             "department": "engineer",
             "job_role": "backend_developer",
-            "url": ""
+            "profile_pic": ""
         }
     ]
     return get_response
@@ -175,10 +178,11 @@ def user_response():
 def user_details():
     details = [
         RegisterUserDto(
+            id=1,
             person_name="chandini",
             job_role="backend_developer",
             department="engineer",
-            url=""
+            profile_pic=""
             )
         ]
     return details
@@ -188,10 +192,7 @@ def user_details():
 def user_requests_dto():
     response = [
         IndividualUserRequestsDto(
-            person_name="chandini",
-            department="engineer",
-            job_role="backend_developer",
-            profile_pic="",
+            id=1,
             resource_name="aws",
             item_name="cloud",
             access_level="access_level",
@@ -206,36 +207,79 @@ def user_requests_dto():
 def get_user_requests_response():
     response =  [{
             "person_name":"chandini",
-            "department":"engineer",
-            "job_role":"backend_developer",
-            "profile_pic":"",
+            "department":"department",
+            "job_role":"job_role",
+            "profile_pic":"chandini",
             "resource_name":"aws",
             "item_name":"cloud",
             "access_level":"access_level",
             "description":"cloud services",
             "link":"https://www.aws.com"
     }]
+    return response
 
+@pytest.fixture
+def get_request_response():
+    return {
+            "count": 3,
+            "users": [{
+                "id": 1,
+                "person_name":"chandini",
+                "department":"department",
+                "job_role":"job_role",
+                "access_level":"access_level"
+
+            }]
+        }
+
+
+@pytest.fixture
+def request_dto():
+    response = [RequestDto(
+        id=1,
+        access_level="access_level"
+        )]
+    return response
 
 @pytest.fixture()
 def get_user_requests_dto():
-    response = [GetUserRequestsDto(
+    response =getuserrequestsdto(
+    count=3,
+    requests= [GetUserRequestsDto(
+            id=1,
             resource_name="aws",
             item_name="service",
             access_level="Read",
             status="Pending"
-        )]
+        )])
     return response
 
 
 @pytest.fixture()
 def get_user_requests_dto_response():
-    response = [
-        {
+    response = {
+        "count": 3,
+        "requests": [{
+            "id":1,
             "resource_name":"aws",
             "item_name":"service",
             "access_level":"Read",
             "status":"Pending"
+        }]
         }
-        ]
     return response
+
+@pytest.fixture()
+def user_dtos():
+    response = [
+        userdto(
+            id=1,
+            person_name="chandini",
+            department="department",
+            profile_pic="chandini",
+            job_role="job_role",
+            is_admin=True
+        )
+    ]
+    return response
+

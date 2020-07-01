@@ -21,4 +21,4 @@ def test_get_user_details(
     assert response[0]["person_name"] == expected_response[0]["person_name"]
     assert response[0]["department"] == expected_response[0]["department"]
     assert response[0]["job_role"] == expected_response[0]["job_role"]
-    assert response[0]["url"] == expected_response[0]["url"]
+    assert response[0]["profile_pic"] == expected_response[0]["profile_pic"]

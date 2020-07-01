@@ -23,15 +23,22 @@ class StatusInteractor:
         request_ids_list: List[int]
     ):
 
-        valid_input = self.storage.check_for_valid_input(request_ids_list)
+        request_ids = self.storage.get_request_ids()
 
-        invalid_input = not valid_input
-
-        if invalid_input:
-            self.presenter.raise_invalid_id_exception()
+        self._validate_request_ids(request_ids, request_ids_list)
 
         self.storage.set_status(
             status=status,
             reason=reason,
             request_ids_list=request_ids_list
         )
+
+    def _validate_request_ids(
+        self, request_ids: List[int], request_ids_list: List[int]):
+            invalid_ids = []
+            for id in request_ids:
+                if id not in request_ids_list:
+                    invalid_ids.append(id)
+
+            if invalid_ids:
+                self.presenter.raise_invalid_id_exception()

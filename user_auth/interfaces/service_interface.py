@@ -23,3 +23,6 @@ class ServiceInterface:
         interactor = GetAllUserDetailsInteractor(storage=storage)
         user_dtos = interactor.get_user_details_interactor()
         return user_dtos
+
+    # @staticmethod
+    # def create_users

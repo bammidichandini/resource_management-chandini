@@ -6,8 +6,7 @@ from resource_management.storages.resources_storage import StorageImplementation
 
 @pytest.mark.django_db
 def test_update_resource_storage(create_resources,
-                                 resource_dtos,
-                                 create_users1
+                                 resource_dtos
                                  ):
 
     #arrange

@@ -7,7 +7,7 @@ from resource_management.storages.requests_storage_implementation import Storage
 @pytest.mark.django_db
 def test_create_user_request(
     add_request_dto,
-    create_requests,
+    create_resources,
     create_useraccess
 ):
 

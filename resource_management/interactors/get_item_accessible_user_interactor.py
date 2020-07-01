@@ -26,18 +26,17 @@ class GetUsersForItems:
         limit: int
     ):
 
-        item_ids_list = [limit]
 
-        valid_input = self.storage.check_for_valid_input(item_ids_list)
+        valid_input = self._check_for_valid_limit(limit)
 
-        valid_offset = self.storage.check_for_valid_offset(offset)
+        valid_offset = self._check_for_valid_offset(offset)
 
         invalid_offset = not valid_offset
 
         invalid_input = not valid_input
 
         if invalid_input or invalid_offset:
-            self.presenter.raise_invalid_id_exception()
+            self.presenter.raise_invalid_input_exception()
 
         item_ids = self.storage.get_item_ids()
         self._validate_item_ids(item_ids, item_id)
@@ -70,3 +69,13 @@ class GetUsersForItems:
     def _validate_item_ids(self, item_ids: List[int], item_id: int):
         if item_id not in item_ids:
             self.presenter.raise_invalid_id_exception()
+
+    def _check_for_valid_limit(self, limit) -> bool:
+        if limit <= 0 :
+            return False
+        return True
+
+    def _check_for_valid_offset(self, offset):
+        if offset < 0:
+            return False
+        return True

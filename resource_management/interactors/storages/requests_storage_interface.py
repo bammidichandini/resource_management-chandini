@@ -14,9 +14,9 @@ from resource_management.dtos.dtos import (
 
 class StorageInterface(ABC):
 
-    @abstractmethod
-    def get_requests(self) -> List[RequestsDto]:
-        pass
+    # @abstractmethod
+    # def get_requests(self) -> List[RequestsDto]:
+    #     pass
 
 
     @abstractmethod
@@ -56,15 +56,6 @@ class StorageInterface(ABC):
     @abstractmethod
     def get_user_requests(self, user_id: int, offset, limit) -> getuserrequestsdto:
         pass
-
-
-    @abstractmethod
-    def check_for_valid_input(self, item_ids_list: List[int]) -> bool:
-        pass
-
-    @abstractmethod
-    def check_for_valid_offset(self, offset):
-       pass
 
     @abstractmethod
     def get_request_ids(self) -> List[int]:

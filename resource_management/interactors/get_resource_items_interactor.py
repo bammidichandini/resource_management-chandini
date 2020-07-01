@@ -24,20 +24,18 @@ class GetResourceItemsInteractor:
         req_parameter_dto: ResourceItemParametersDto
     ):
 
-        ids_list = [req_parameter_dto.limit]
-
-        valid_offset = self.storage.check_for_valid_offset(
+        valid_offset = self._check_for_valid_offset(
             req_parameter_dto.offset
         )
 
         invalid_offset = not valid_offset
 
-        valid_input = self.storage.check_for_valid_input(ids_list)
+        valid_input = self._check_for_valid_limit(req_parameter_dto.limit)
 
         invalid_input = not valid_input
 
         if invalid_input or invalid_offset:
-            self.presenter.raise_invalid_id_exception()
+            self.presenter.raise_invalid_input_exception()
 
         is_admin = self._check_whether_user_is_an_admin_or_not(user_id)
 
@@ -59,3 +57,14 @@ class GetResourceItemsInteractor:
         user_dtos = service_adapter_obj.auth_service.get_user_dtos([user_id])
         is_admin = user_dtos[0].is_admin
         return is_admin
+
+
+    def _check_for_valid_limit(self, limit) -> bool:
+        if limit <= 0 :
+            return False
+        return True
+
+    def _check_for_valid_offset(self, offset):
+        if offset < 0:
+            return False
+        return True

@@ -58,8 +58,6 @@ def test_get_item_related_user(
         user_dtos=user_dtos,
         count=3
         )
-    storage.check_for_valid_input.assert_called_once_with([limit])
-    storage.check_for_valid_offset.assert_called_once_with(offset)
     assert expected_response[0]["users"]["person_name"] == \
         actual_response[0]["users"]["person_name"]
     assert expected_response[0]["users"]["department"] == \

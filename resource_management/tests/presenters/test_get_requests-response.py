@@ -5,7 +5,8 @@ from resource_management.presenters.authentication_presenter import PresenterImp
 @pytest.mark.django_db
 def test_get_request_presenter(
     requests,
-    get_requests
+    get_requests,
+    user_dtos
     ):
 
     # arrange
@@ -17,7 +18,10 @@ def test_get_request_presenter(
 
     # act
 
-    actual_response = presenter.get_requests_response(input)
+    actual_response = presenter.get_requests_response(
+        request_dto=input,
+        user_dtos=user_dtos
+    )
 
     # assert
 
