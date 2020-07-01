@@ -1,7 +1,6 @@
-from resource_management.dtos.dtos import UpdateProfileDto
-from resource_management.exceptions.exceptions import InvalidDetailsException
-from resource_management.interactors.storages.user_profile_storage_interface import StorageInterface
-from resource_management.interactors.presenters.presenter_interface import PresenterInterface
+from user_auth.dtos.dtos import UpdateProfileDto
+from user_auth.interactors.storages.user_profile_storage_interface import StorageInterface
+from user_auth.interactors.presenters.presenter_interface import PresenterInterface
 
 
 class UpdateUserProfileInteractor:

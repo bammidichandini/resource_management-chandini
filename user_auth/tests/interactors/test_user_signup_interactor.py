@@ -1,12 +1,12 @@
 import pytest
 from unittest.mock import create_autospec
-from resource_management.storages.authentication_storage import StorageImplementation
-from resource_management.presenters.authentication_presenter import PresenterImplementation
-from resource_management.interactors.user_signup import UserSignUpInteractor
-from resource_management.interactors.status_interactor import StatusInteractor
-from resource_management.exceptions.exceptions import InvalidIdException
+from user_auth.storages.authentication_storage import StorageImplementation
+from user_auth.presenters.authentication_presenter import PresenterImplementation
+from user_auth.interactors.user_signup import UserSignUpInteractor
+# from user_auth.interactors.status_interactor import StatusInteractor
+from user_auth.exceptions.exceptions import InvalidIdException
 from common.oauth_user_auth_tokens_service import OAuthUserAuthTokensService
-from resource_management.exceptions.exceptions import UserAlreadyExistedException
+from user_auth.exceptions.exceptions import UserAlreadyExistedException
 from common.oauth2_storage import OAuth2SQLStorage
 from django_swagger_utils.drf_server.exceptions import NotFound
 

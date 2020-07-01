@@ -1,6 +1,6 @@
-from resource_management.interactors.storages.user_profile_storage_interface \
+from user_auth.interactors.storages.user_profile_storage_interface \
     import StorageInterface
-from resource_management.interactors.presenters.presenter_interface \
+from user_auth.interactors.presenters.presenter_interface \
     import PresenterInterface
 
 

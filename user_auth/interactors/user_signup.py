@@ -1,8 +1,8 @@
 from common.dtos import UserAuthTokensDTO
 from common.oauth2_storage import OAuth2SQLStorage
-from resource_management.interactors.storages.storage_interface \
+from user_auth.interactors.storages.storage_interface \
     import StorageInterface
-from resource_management.interactors.presenters.presenter_interface \
+from user_auth.interactors.presenters.presenter_interface \
     import PresenterInterface
 from common.oauth_user_auth_tokens_service \
     import OAuthUserAuthTokensService

@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import create_autospec
-from resource_management.models import User
-from resource_management.interactors.storages.user_profile_storage_interface import StorageInterface
-from resource_management.interactors.presenters.presenter_interface import PresenterInterface
-from resource_management.interactors.update_password_interactor import UpdatePasswordInteractor
+from user_auth.models import User
+from user_auth.interactors.storages.user_profile_storage_interface import StorageInterface
+from user_auth.interactors.presenters.presenter_interface import PresenterInterface
+from user_auth.interactors.update_password_interactor import UpdatePasswordInteractor
 
 
 @pytest.mark.django_db

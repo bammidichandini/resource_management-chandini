@@ -1,14 +1,13 @@
 import pytest
 from unittest.mock import create_autospec
-from resource_management.models import User
-from resource_management.interactors.storages.user_profile_storage_interface \
+from user_auth.models import User
+from user_auth.interactors.storages.user_profile_storage_interface \
         import StorageInterface
-from resource_management.interactors.presenters.presenter_interface \
+from user_auth.interactors.presenters.presenter_interface \
         import PresenterInterface
-from resource_management.interactors.update_user_profile_interactor \
+from user_auth.interactors.update_user_profile_interactor \
         import UpdateUserProfileInteractor
-from resource_management.constants.enums import Gender
-from resource_management.exceptions.exceptions import InvalidDetailsException
+from user_auth.constants.enums import Gender
 
 
 @pytest.mark.django_db

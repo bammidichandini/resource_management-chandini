@@ -1,6 +1,6 @@
 from abc import ABC
 from abc import abstractmethod
-from resource_management.dtos.dtos import UpdateProfileDto
+from user_auth.dtos.dtos import UpdateProfileDto
 
 
 class StorageInterface(ABC):
