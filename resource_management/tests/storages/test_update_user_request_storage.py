@@ -6,27 +6,27 @@ from resource_management.exceptions.exceptions import (
     InvalidDetailsException
     )
 
-@pytest.mark.parametrize("request_id", [
-    (-1),(0)])
-@pytest.mark.django_db
-def test_update_user_request_with_invalid_id(
-    request_update_dto,
-    request_id,
-    create_useraccess
-):
+# @pytest.mark.parametrize("request_id", [
+#     (-1),(0)])
+# @pytest.mark.django_db
+# def test_update_user_request_with_invalid_id(
+#     request_update_dto,
+#     request_id,
+#     create_useraccess
+# ):
 
-    # arrange
+#     # arrange
 
-    user_id = 1
-    storage = StorageImplementation()
+#     user_id = 1
+#     storage = StorageImplementation()
 
-    # act
-    with pytest.raises(InvalidIdException):
-        storage.update_user_request(
-            user_id=user_id,
-            update_dto=request_update_dto,
-            request_id=request_id
-            )
+#     # act
+#     with pytest.raises(InvalidIdException):
+#         storage.update_user_request(
+#             user_id=user_id,
+#             update_dto=request_update_dto,
+#             request_id=request_id
+#             )
 
 @pytest.mark.django_db
 def test_update_user_request(

@@ -5,9 +5,10 @@ from common.dtos import UserAuthTokensDTO
 from resource_management.dtos.dtos import (
     ResourceDto,
     UserDto,
+    RequestDto,
     RequestsDto,
     ResourceItemDto,
-    UserDto,
+    userdto,
     RegisterUserDto,
     Itemdto,
     IndividualUserRequestsDto,
@@ -64,14 +65,17 @@ class PresenterInterface(ABC):
     @abstractmethod
     def get_user_for_items_response(
             self,
-            list_of_user_dto: UserDto):
+            request_dto: List[RequestDto],
+            user_dtos: userdto,
+            count: int
+    ):
         pass
 
     @abstractmethod
     def get_requests_response(
         self,
-        request_dto: List[RequestsDto],
-
+        user_dtos: List[userdto],
+        request_dto: List[RequestsDto]
         ):
         pass
 
@@ -96,7 +100,8 @@ class PresenterInterface(ABC):
 
     @abstractmethod
     def get_individual_user_details_to_admin_response(self,
-    user_requests_dto: List[IndividualUserRequestsDto]
+    user_requests_dto: List[IndividualUserRequestsDto],
+    user_dto: userdto
     ):
         pass
 
@@ -106,4 +111,8 @@ class PresenterInterface(ABC):
 
     @abstractmethod
     def get_user_requests_response(self, user_dto: getuserrequestsdto):
+        pass
+
+    @abstractmethod
+    def raise_invalid_input_exception(self):
         pass

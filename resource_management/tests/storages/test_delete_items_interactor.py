@@ -2,7 +2,7 @@ import pytest
 from resource_management.storages.item_storages_implementation import StorageImplementation
 
 @pytest.mark.django_db()
-def test_delete_items(create_items, create_users1):
+def test_delete_items(create_items):
 
     #arrange
     user_id = 1

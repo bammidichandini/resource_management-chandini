@@ -30,7 +30,3 @@ class StorageInterface(ABC):
     @abstractmethod
     def is_admin(self, user_id: int) -> bool:
         pass
-
-    @abstractmethod
-    def check_for_valid_offset(self, offset):
-       pass

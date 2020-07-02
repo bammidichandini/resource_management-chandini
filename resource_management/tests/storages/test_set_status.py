@@ -4,24 +4,24 @@ from resource_management.storages.requests_storage_implementation import Storage
 from resource_management.exceptions.exceptions import InvalidIdException
 
 
-@pytest.mark.parametrize("request_ids_list", [
-    ([1,0]),([-1,2])])
-def test_set_status(request_ids_list):
+# @pytest.mark.parametrize("request_ids_list", [
+#     ([1,0]),([-1,2])])
+# def test_set_status(request_ids_list):
 
-    # arrange
+#     # arrange
 
-    status = "Accepted"
-    reason = "something"
+#     status = "Accepted"
+#     reason = "something"
 
-    storage = StorageImplementation()
+#     storage = StorageImplementation()
 
-    # act
-    with pytest.raises(InvalidIdException):
-        storage.set_status(
-            request_ids_list=request_ids_list,
-            reason=reason,
-            status=status
-            )
+#     # act
+#     with pytest.raises(InvalidIdException):
+#         storage.set_status(
+#             request_ids_list=request_ids_list,
+#             reason=reason,
+#             status=status
+#             )
 
 @pytest.mark.django_db
 def test_set_status_with_valid_details(create_requests):

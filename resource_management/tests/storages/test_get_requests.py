@@ -17,7 +17,8 @@ def test_get_request_storage(create_requests,
 
     # assert
 
-    assert expected_response[0].name == actual_response[0].name
+    assert expected_response[0].id == actual_response[0].id
+    assert expected_response[0].user_id == actual_response[0].user_id
     assert expected_response[0].resource_name == actual_response[0].resource_name
     assert expected_response[0].item_name == actual_response[0].item_name
     assert expected_response[0].access_level == actual_response[0].access_level

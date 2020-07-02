@@ -8,16 +8,14 @@ def test_get_resources_item(item_dto,
                             get_req_param
                             ):
 
-    #arrange
+    # arrange
 
 
     expected_dto_list = item_dto
     storage = StorageImplementation()
 
-    #act
+    # act
     items_list = storage.get_resource_items(get_req_param)
 
-    #assert
-    assert expected_dto_list[0].item_name == items_list[0].item_name
-    assert expected_dto_list[0].link == items_list[0].link
-    assert expected_dto_list[0].description == items_list[0].description
+    # assert
+    assert expected_dto_list == items_list

@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import create_autospec
+from unittest.mock import create_autospec, patch
 from resource_management.interactors.storages.item_storages \
     import StorageInterface
 from resource_management.interactors.presenters.presenter_interface \
@@ -12,16 +12,16 @@ from resource_management.exceptions.exceptions \
 
 
 @pytest.mark.django_db
-def test_create_resource_item(item_dto):
+@patch('resource_management.adapters.auth_service.AuthService.get_user_dtos')
+def test_create_resource_item(get_user_dtos, user_dtos, item_dto):
 
     #arrange
 
     user_id = 1
 
+    get_user_dtos.return_value = user_dtos
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
-
-    storage.is_admin.return_value = True
 
     interactor = CreateResourceItemInteractor(
         storage=storage,
@@ -38,10 +38,11 @@ def test_create_resource_item(item_dto):
         item_dto=item_dto,
         user_id=user_id
         )
-    storage.is_admin.assert_called_once_with(user_id)
 
 
-def test_create_resource_item_with_user(item_dto):
+@pytest.mark.django_db
+@patch('resource_management.adapters.auth_service.AuthService.get_user_dtos')
+def test_create_resource_item_with_user(get_user_dtos, user_dtos1, item_dto):
 
     #arrange
     user_id = 1
@@ -49,7 +50,8 @@ def test_create_resource_item_with_user(item_dto):
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    storage.is_admin.return_value =False
+    get_user_dtos.return_value = user_dtos1
+
     presenter.raise_user_cannot_manipulate_exception.side_effect = \
         UserCannotManipulateException
 
@@ -64,4 +66,3 @@ def test_create_resource_item_with_user(item_dto):
             item_dto=item_dto,
             user_id=user_id
             )
-

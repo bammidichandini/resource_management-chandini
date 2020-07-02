@@ -1,10 +1,8 @@
-from resource_management.models.user import User
 from resource_management.models.resource import Resource
 from resource_management.models.item import Item, Request, UserAccess
 
 
 __all__ = [
-    "User",
     "Resource",
     "Item",
     "Request",

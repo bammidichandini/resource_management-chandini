@@ -19,8 +19,12 @@ def test_get_user_requests(
     response = presenter.get_user_requests_response(input)
 
     # assert
-    assert expected_response[0]["resource_name"] == response[0]["resource_name"]
-    assert expected_response[0]["item_name"] == response[0]["item_name"]
-    assert expected_response[0]["access_level"] == response[0]["access_level"]
-    assert expected_response[0]["status"] == response[0]["status"]
+    assert expected_response["requests"][0]["resource_name"] == \
+      response["requests"][0]["resource_name"]
+    assert expected_response["requests"][0]["item_name"] == \
+      response["requests"][0]["item_name"]
+    assert expected_response["requests"][0]["access_level"] == \
+      response["requests"][0]["access_level"]
+    assert expected_response["requests"][0]["status"] == \
+      response["requests"][0]["status"]
 

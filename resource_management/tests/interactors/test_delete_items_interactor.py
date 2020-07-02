@@ -1,28 +1,31 @@
 import pytest
-from unittest.mock import create_autospec
+from unittest.mock import create_autospec, patch
 from resource_management.exceptions.exceptions import (
     UserCannotManipulateException,
     InvalidIdException
     )
 from django.core.exceptions import ObjectDoesNotExist
 from resource_management.exceptions.exceptions import InvalidIdException
+from django_swagger_utils.drf_server.exceptions import NotFound
 from resource_management.interactors.delete_items_interactor import DeleteItemsInteractor
 from resource_management.interactors.storages.item_storages import StorageInterface
 from resource_management.interactors.presenters.presenter_interface import PresenterInterface
 
 
-def test_delete_items():
+@pytest.mark.django_db
+@patch('resource_management.adapters.auth_service.AuthService.get_user_dtos')
+def test_delete_items(get_user_dtos, user_dtos):
 
     # arrange
 
     user_id = 1
     item_ids = [1,2,3]
 
+    get_user_dtos.return_value = user_dtos
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    storage.is_admin.return_value = True
-    storage.check_for_valid_input.return_value = True
+    # storage.check_for_valid_input.return_value = True
 
     interactor = DeleteItemsInteractor(
         storage=storage,
@@ -41,23 +44,23 @@ def test_delete_items():
         item_ids_list=item_ids,
         user_id=user_id
         )
-    storage.is_admin.assert_called_once_with(user_id)
-    storage.check_for_valid_input.assert_called_once_with(item_ids)
+    # storage.is_admin.assert_called_once_with(user_id)
+    # storage.check_for_valid_input.assert_called_once_with(item_ids)
 
 
-def test_delete_items_with_invalid_input():
+@pytest.mark.django_db
+@patch('resource_management.adapters.auth_service.AuthService.get_user_dtos')
+def test_delete_items_with_invalid_input(get_user_dtos, user_dtos):
 
     # arrange
 
     user_id = 1
     item_ids = [100]
 
+    get_user_dtos.return_value = user_dtos
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    storage.is_admin.return_value = True
-    storage.check_for_valid_input.return_value = True
-    storage.delete_items.side_effect = ObjectDoesNotExist
     presenter.raise_invalid_id_exception.side_effect = InvalidIdException
 
     interactor = DeleteItemsInteractor(
@@ -73,21 +76,22 @@ def test_delete_items_with_invalid_input():
             )
 
 
-
+@pytest.mark.django_db
 @pytest.mark.parametrize("item_ids", [
-    ([-1,2,3]),([0,1,2])
+    ([9,2,3])
 ])
-def test_delete_items_with_invalid_item_ids(item_ids):
+@patch('resource_management.adapters.auth_service.AuthService.get_user_dtos')
+def test_delete_items_with_invalid_item_ids( get_user_dtos, item_ids, user_dtos):
 
     # arrange
 
     user_id = 1
 
+    get_user_dtos.return_value = user_dtos
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    storage.check_for_valid_input.return_value = False
-    presenter.raise_invalid_id_exception.side_effect = InvalidIdException
+    presenter.raise_invalid_id_exception.side_effect = NotFound
 
     interactor = DeleteItemsInteractor(
         storage=storage,
@@ -95,26 +99,26 @@ def test_delete_items_with_invalid_item_ids(item_ids):
         )
 
     # act
-    with pytest.raises(InvalidIdException):
+    with pytest.raises(NotFound):
         interactor.delete_items_interactor(
             user_id=user_id,
             item_ids_list=item_ids
             )
 
 
-
-def test_delete_items_with_user_raises_exception():
+@pytest.mark.django_db
+@patch('resource_management.adapters.auth_service.AuthService.get_user_dtos')
+def test_delete_items_with_user_raises_exception(get_user_dtos, user_dtos1):
 
     # arrange
 
     user_id = 1
     item_ids = [1,2,3]
 
+    get_user_dtos.return_value = user_dtos1
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    storage.check_for_valid_input.return_value = True
-    storage.is_admin.return_value = False
     presenter.raise_user_cannot_manipulate_exception.side_effect = \
         UserCannotManipulateException
 
@@ -129,4 +133,3 @@ def test_delete_items_with_user_raises_exception():
             user_id=user_id,
             item_ids_list=item_ids
             )
-

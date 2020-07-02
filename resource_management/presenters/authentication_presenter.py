@@ -5,11 +5,23 @@ from resource_management.interactors.presenters.presenter_interface \
     import PresenterInterface
 from typing import List
 from resource_management.constants.enums import TimeFormat
+from django_swagger_utils.drf_server.exceptions import (
+    BadRequest,
+    Forbidden,
+    NotFound
+)
+from resource_management.constants.exception_messages import (
+    INVALID_ID,
+    INVALID_INPUT,
+    FORBIDDEN
+)
 from resource_management.dtos.dtos import (
     ResourceDto,
     RequestsDto,
+    RequestDto,
     UserDto,
     Itemdto,
+    userdto,
     RegisterUserDto,
     IndividualUserRequestsDto,
     ItemDto,
@@ -27,15 +39,21 @@ from resource_management.exceptions.exceptions import (
     InvalidIdException,
     InvalidDetailsException
     )
-
+from resource_management.constants.exception_messages import (
+    INVALID_ID,
+    INVALID_INPUT,
+    EXISTED_USER,
+    INVALID_USER,
+    INVALID_PASSWORD
+)
 class PresenterImplementation(PresenterInterface):
 
     def raise_invalid_password_exception(self):
-        raise InvalidPasswordException
+        raise BadRequest(*INVALID_PASSWORD)
 
 
     def raise_invalid_username_exception(self):
-        raise InvalidUserException
+        raise BadRequest(*INVALID_USER)
 
 
     def get_login_response(self,
@@ -97,7 +115,7 @@ class PresenterImplementation(PresenterInterface):
         return resources_dict_list
 
     def raise_user_cannot_manipulate_exception(self):
-        raise UserCannotManipulateException
+        raise Forbidden(*FORBIDDEN)
 
 
     def get_resource_items_response(
@@ -129,15 +147,20 @@ class PresenterImplementation(PresenterInterface):
 
     def get_requests_response(
         self,
+        user_dtos: List[userdto],
         request_dto: List[RequestsDto]
         ):
         format = TimeFormat.FORMAT.value
         request_dto_list = []
+        user_dict = {}
+        for user_dto in user_dtos:
+            user_dict[user_dto.id]= user_dto
+
         for request_obj in request_dto:
             request_dict = {
                 "id": request_obj.id,
-                "url": request_obj.url,
-                "name": request_obj.name,
+                "url": user_dict[request_obj.user_id].profile_pic,
+                "name": user_dict[request_obj.user_id].person_name,
                 "item_name": request_obj.item_name,
                 "access_level":request_obj.access_level,
                 "duedatetime":(request_obj.duedatetime).strftime(format),
@@ -148,29 +171,35 @@ class PresenterImplementation(PresenterInterface):
 
     def get_user_for_items_response(
             self,
-            user_dto: UserDto):
-        user_dtos = user_dto.users
+            user_dtos: userdto,
+            request_dto: List[RequestDto],
+            count: int
+        ):
+        user_dict = {}
+        for user_dto in user_dtos:
+            user_dict[user_dto.id] = user_dto
+
         list_of_user = []
-        for dto_obj in user_dtos:
+        for dto_obj in request_dto:
             list_of_user .append( {
-                "id": dto_obj.id,
-                "person_name": dto_obj.person_name,
-                "department": dto_obj.department,
-                "job_role": dto_obj.job_role,
+                "id": user_dict[dto_obj.id].id,
+                "person_name": user_dict[dto_obj.id].person_name,
+                "department": user_dict[dto_obj.id].department,
+                "job_role": user_dict[dto_obj.id].job_role,
                 "access_level": dto_obj.access_level,
             })
         user_dict = {
-            "count": user_dto.count,
+            "count": count,
             "users": list_of_user
         }
         return user_dict
 
     def raise_user_already_existed_exception(self):
-        raise UserAlreadyExistedException
+        raise BadRequest(*EXISTED_USER)
 
 
     def raise_invalid_id_exception(self):
-        raise InvalidIdException
+        raise NotFound(*INVALID_ID)
 
     def raise_invalid_details_exception(self):
         raise InvalidDetailsException
@@ -187,22 +216,28 @@ class PresenterImplementation(PresenterInterface):
                 "person_name": dto.person_name,
                 "job_role": dto.job_role,
                 "department": dto.department,
-                "profile_pic": dto.url
+                "profile_pic": dto.profile_pic
             })
         return users_dict_list
 
 
     def get_individual_user_details_to_admin_response(self,
-    user_requests_dto: List[IndividualUserRequestsDto]
+    user_requests_dto: List[IndividualUserRequestsDto],
+    user_dto: List[userdto]
+
     ):
+        user_dict = {}
+        for dto in user_dto:
+            user_dict[dto.id]=dto
+
         list_of_users = []
         for dto in user_requests_dto:
             list_of_users.append(
                 {
-                    "person_name": dto.person_name,
-                    "department":dto.department,
-                    "job_role":dto.job_role,
-                    "profile_pic":dto.profile_pic,
+                    "person_name": user_dict[dto.id].person_name,
+                    "department":user_dict[dto.id].department,
+                    "job_role":user_dict[dto.id].job_role,
+                    "profile_pic":user_dict[dto.id].profile_pic,
                     "resource_name":dto.resource_name,
                     "item_name":dto.item_name,
                     "access_level":dto.access_level,
@@ -215,6 +250,7 @@ class PresenterImplementation(PresenterInterface):
     def get_user_resources_response(self, items_dto: List[Itemdto]):
         items_list = []
         for item in items_dto:
+            print("*"* 100,item)
             items_list.append(
                 {
                     "id":item.id,
@@ -247,3 +283,5 @@ class PresenterImplementation(PresenterInterface):
         return result_dict
 
 
+    def raise_invalid_input_exception(self):
+        raise BadRequest(*INVALID_INPUT)

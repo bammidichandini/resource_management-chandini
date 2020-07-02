@@ -4,10 +4,7 @@ from resource_management.storages.resources_storage import StorageImplementation
 
 
 @pytest.mark.django_db
-def test_create_resource_storage(create_resources,
-                                 resource_dtos,
-                                 create_users1
-                                 ):
+def test_create_resource_storage(resource_dtos):
 
     #arrange
     user_id = 1
@@ -29,5 +26,3 @@ def test_create_resource_storage(create_resources,
         link=resource_dtos.link,
         description=resource_dtos.description
         ).exists()
-
-

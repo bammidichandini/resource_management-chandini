@@ -1,6 +1,6 @@
 from typing import List
-from resource_management.models import Resource, User, Item, UserAccess
-from resource_management.dtos.dtos import ResourceDto, ItemDto, Itemdto
+from resource_management.models import Resource, Item, UserAccess, Request
+from resource_management.dtos.dtos import ResourceDto, ItemDto, Itemdto, itemdto
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Prefetch
 from resource_management.interactors.storages.resources_storage_interface import \
@@ -17,19 +17,13 @@ class StorageImplementation(StorageInterface):
                         resource_dto: ResourceDto,
                         user_id: int
                         ):
-        is_admin = self.is_admin_or_user(user_id=user_id)
-
-
-        if is_admin:
-            Resource.objects.create(
-                image_url=resource_dto.image_url,
-                name=resource_dto.name,
-                item_name=resource_dto.item_name,
-                link=resource_dto.link,
-                description=resource_dto.description
-                )
-        else:
-            raise UserCannotManipulateException
+        Resource.objects.create(
+            image_url=resource_dto.image_url,
+            name=resource_dto.name,
+            item_name=resource_dto.item_name,
+            link=resource_dto.link,
+            description=resource_dto.description
+            )
 
 
     def get_resources(self) -> List[ResourceDto]:
@@ -61,67 +55,40 @@ class StorageImplementation(StorageInterface):
                         resource_dto: ResourceDto,
                         user_id: int
                         ):
-        is_admin = self.is_admin_or_user(user_id=user_id)
-        if is_admin:
-
-           resources =  Resource.objects.filter(
-                id=resource_id
+       resources =  Resource.objects.filter(
+            id=resource_id
+            )
+       resources.update(
+                image_url=resource_dto.image_url,
+                name=resource_dto.name,
+                item_name=resource_dto.item_name,
+                link=resource_dto.link,
+                description=resource_dto.description
                 )
-           resources.update(
-                    image_url=resource_dto.image_url,
-                    name=resource_dto.name,
-                    item_name=resource_dto.item_name,
-                    link=resource_dto.link,
-                    description=resource_dto.description
-                    )
-        else:
-            raise UserCannotManipulateException
 
 
     def delete_resources(self,
                          user_id: int,
                          resource_ids_list: List[int]):
 
-        is_admin = self.is_admin_or_user(user_id=user_id)
+        resources = Resource.objects.filter(id__in=resource_ids_list)
+        resources.delete()
 
-        if is_admin:
-            resources = Resource.objects.filter(id__in=resource_ids_list)
-            resources.delete()
+    def get_resource_ids(self):
+        resources = Resource.objects.values_list('id', flat=True)
+        return resources
 
-        else:
-            raise UserCannotManipulateException
+    def get_user_resources(self, user_id: int) -> List[itemdto]:
 
-    @staticmethod
-    def is_admin_or_user(user_id):
-        is_admin = User.objects.get(id=user_id).is_admin
-        return is_admin
-
-
-    def get_user_resources(self, user_id: int) -> List[Itemdto]:
-
-        items = Item.objects.filter(user_id=user_id).prefetch_related('resource','useraccess')
+        requests = Request.objects.filter(user_id=user_id).prefetch_related('item', 'resource')
 
         items_list = []
-        for item in items:
-            items_list.append(Itemdto(
-                id=item.id,
-                item_name=item.name,
-                link=item.link,
-                resource_name=item.resource.name,
-                access_level=item.useraccess.access_level
+        for request in requests:
+            items_list.append(itemdto(
+                id=request.item.id,
+                item_name=request.item.name,
+                link=request.item.link,
+                resource=request.resource.name
                 ))
         return items_list
 
-    def check_for_valid_input(self, list_ids: List[int]):
-        for id in list_ids:
-            if id <= 0 :
-                return False
-
-    def check_for_valid_offset(self, offset):
-        if offset < 0:
-            return False
-        return True
-
-    def is_admin(self, user_id: int) -> List[int]:
-        is_admin = User.objects.get(id=user_id).is_admin
-        return is_admin

@@ -5,9 +5,8 @@ from resource_management.storages.item_storages_implementation import StorageImp
 
 @pytest.mark.django_db
 def test_add_resource_items_storage(create_items,
-                                       reitems_dto,
-                                       create_users1
-                                       ):
+                                    reitems_dto,
+                                   ):
 
     #arrange
 
@@ -28,5 +27,3 @@ def test_add_resource_items_storage(create_items,
         link=reitem_dtos.link,
         description=reitem_dtos.description
         ).exists()
-
-

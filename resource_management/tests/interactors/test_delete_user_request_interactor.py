@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import create_autospec
-from resource_management.exceptions.exceptions import InvalidIdException
+from django_swagger_utils.drf_server.exceptions import NotFound
 from resource_management.interactors.storages.requests_storage_interface \
     import StorageInterface
 from resource_management.interactors.presenters.presenter_interface \
@@ -9,7 +9,7 @@ from resource_management.interactors.delete_user_request \
     import DeleteUserRequestInteractor
 
 @pytest.mark.parametrize("request_id", [
-    (-1),(0)])
+    (10),(20)])
 @pytest.mark.django_db
 def test_delete_user_request_invalid_id(
     request_id
@@ -22,8 +22,8 @@ def test_delete_user_request_invalid_id(
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    storage.check_for_valid_input.return_value = False
-    presenter.raise_invalid_id_exception.side_effect = InvalidIdException
+    storage.get_request_ids.return_value = [1,2]
+    presenter.raise_invalid_id_exception.side_effect = NotFound
 
     interactor = DeleteUserRequestInteractor(
         storage=storage,
@@ -31,7 +31,7 @@ def test_delete_user_request_invalid_id(
         )
 
     # act
-    with pytest.raises(InvalidIdException):
+    with pytest.raises(NotFound):
         interactor.delete_user_request_interactor(
             user_id=user_id,
             request_id=request_id
@@ -51,7 +51,7 @@ def test_update_user_request(
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    storage.check_for_valid_input.return_value = True
+    storage.get_request_ids.return_value = [1,2]
 
     interactor = DeleteUserRequestInteractor(
         storage=storage,
@@ -69,5 +69,5 @@ def test_update_user_request(
         user_id=user_id,
         request_id=request_id
     )
-    storage.check_for_valid_input.assert_called_once_with([request_id])
+
 

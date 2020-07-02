@@ -8,6 +8,21 @@ class ServiceAdapter(BaseAdapterClass):
         kwargs['source'] = source
         super(ServiceAdapter, self).__init__(*args, **kwargs)
 
+class ServicesAdapter:
+    @property
+    def auth_service(self):
+        from .auth_service import AuthService
+        return AuthService()
+
+
+    # @property
+    # def reactions_service(self):
+    #     from .reactions_service import ReactionsService
+    #     return ReactionsService()
+
+def get_service_adapter():
+    return ServicesAdapter()
+
     # ******* sample service adapter property ********
     # @property
     # def ib_users(self):

@@ -1,5 +1,5 @@
 from django.db import models
-from resource_management.models import Resource, User
+from resource_management.models import Resource
 from resource_management.constants.enums \
     import AccessLevel, RequestStatus
 
@@ -9,14 +9,11 @@ class Item(models.Model):
     link = models.URLField(max_length=200)
     description = models.CharField(max_length=50)
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
-    user = models.ManyToManyField(
-        "User",
-        through="Request")
 
 
 class UserAccess(models.Model):
     item = models.ForeignKey(Item,on_delete=models.CASCADE)
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user_id = models.IntegerField()
     access_choices = (
         (AccessLevel.Read.value, AccessLevel.Read.value),
         (AccessLevel.Write.value, AccessLevel.Write.value),
@@ -31,7 +28,7 @@ class Request(models.Model):
 
     reason = models.CharField(max_length=200,default=None,null=True)
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.IntegerField()
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     resource = models.ForeignKey(Resource, on_delete=models.CASCADE)
 

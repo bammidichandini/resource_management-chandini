@@ -38,37 +38,6 @@ def test_status():
         status=status
         )
 
-
-def test_status_with_invalid_id_raises_exception():
-
-    # arrange
-
-    request_ids_list = [-1]
-    status = "Accepted"
-    reason = "something"
-
-    storage = create_autospec(StorageInterface)
-    presenter = create_autospec(PresenterInterface)
-
-    storage.check_for_valid_input.return_value = False
-    presenter.raise_invalid_id_exception.side_effect = InvalidIdException
-
-    interactor = StatusInteractor(
-        storage=storage,
-        presenter=presenter
-        )
-
-    # act
-    with pytest.raises(InvalidIdException):
-        interactor.status_interactor(
-                request_ids_list=request_ids_list,
-                reason=reason,
-                status=status
-                )
-
-
-
-
 def test_status_with_invalid_id_zero_raises_exception():
 
     # arrange
@@ -80,7 +49,6 @@ def test_status_with_invalid_id_zero_raises_exception():
     storage = create_autospec(StorageInterface)
     presenter = create_autospec(PresenterInterface)
 
-    storage.check_for_valid_input.return_value = False
     presenter.raise_invalid_id_exception.side_effect = InvalidIdException
 
     storage.set_status.side_effect = InvalidIdException

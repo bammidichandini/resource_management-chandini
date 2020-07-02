@@ -13,10 +13,6 @@ from resource_management.dtos.dtos import (
 class StorageInterface(ABC):
 
     @abstractmethod
-    def check_for_valid_offset(self, offset):
-       pass
-
-    @abstractmethod
     def create_resource(self,
                         resource_dto: ResourceDto,
                         user_id: int
@@ -48,9 +44,5 @@ class StorageInterface(ABC):
         pass
 
     @abstractmethod
-    def is_admin(self, user_id: int) -> bool:
-        pass
-
-    @abstractmethod
-    def check_for_valid_input(self, item_ids_list: List[int]):
+    def get_resource_ids(self) -> List[int]:
         pass

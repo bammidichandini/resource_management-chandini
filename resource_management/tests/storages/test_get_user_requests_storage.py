@@ -6,24 +6,32 @@ from resource_management.storages.requests_storage_implementation import Storage
 def test_get_user_requests(
     get_user_requests_dto,
     create_requests,
-    create_useraccess,
-    create_users1
+    create_useraccess
 ):
 
     # assert
 
     user_id = 1
+    offset = 0
+    limit = 1
+
     expected_response = get_user_requests_dto
 
     storage = StorageImplementation()
 
     # act
 
-    response = storage.get_user_requests(user_id=user_id)
+    response = storage.get_user_requests(
+        user_id=user_id,
+        offset=offset,
+        limit=limit
+    )
 
     # assert
+    print(expected_response)
+    print(response)
 
-    assert expected_response[0].resource_name == response[0].resource_name
-    assert expected_response[0].item_name == response[0].item_name
-    assert expected_response[0].access_level == response[0].access_level
-    assert expected_response[0].status == response[0].status
+    assert expected_response.requests[0].resource_name == response.requests[0].resource_name
+    assert expected_response.requests[0].item_name == response.requests[0].item_name
+    assert expected_response.requests[0].access_level == response.requests[0].access_level
+    assert expected_response.requests[0].status == response.requests[0].status

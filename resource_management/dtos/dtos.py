@@ -5,6 +5,11 @@ from resource_management.constants.enums import AccessLevel, RequestStatus
 
 
 @dataclass
+class RequestDto:
+    id: int
+    access_level: AccessLevel
+
+@dataclass
 class ResourceDto:
     id: Optional[int]
     image_url: str
@@ -33,8 +38,9 @@ class userdto:
     id: Optional[int]
     person_name: str
     department: str
+    profile_pic: str
     job_role: str
-    access_level: AccessLevel
+    is_admin: bool
 
 @dataclass
 class UserDto:
@@ -44,13 +50,11 @@ class UserDto:
 @dataclass
 class RequestsDto:
     id: Optional[int]
-    name: str
+    user_id: int
     access_level: AccessLevel
     duedatetime: datetime.datetime
     resource_name: str
     item_name: str
-    url: str
-    id: int
 
 @dataclass
 class RequestsUpdateDto:
@@ -67,8 +71,8 @@ class itemdto:
     id: Optional[int]
     item_name: str
     link: str
-    description: str
-
+    # description: str
+    resource: str
 
 @dataclass
 class ResourceItemDto:
@@ -104,16 +108,12 @@ class RegisterUserDto:
     person_name: str
     department: str
     job_role: str
-    url: str
+    profile_pic: str
 
 
 @dataclass
 class IndividualUserRequestsDto:
-    id: Optional[int]
-    person_name: str
-    department: str
-    job_role: str
-    profile_pic: str
+    id: int
     resource_name: str
     item_name: str
     access_level: str

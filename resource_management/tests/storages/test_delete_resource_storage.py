@@ -4,7 +4,7 @@ from resource_management.storages.resources_storage import StorageImplementation
 
 
 @pytest.mark.django_db()
-def test_delete_resource(create_resources, create_users1):
+def test_delete_resource(create_resources):
 
     #arrange
     user_id = 1
