@@ -34,7 +34,4 @@ def test_update_password(create_users1):
         password=password
      )
     user = User.objects.get(id=1)
-    assert user.password == password
-
-
-
+    assert user.check_password(password) == True

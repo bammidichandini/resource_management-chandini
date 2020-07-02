@@ -34,5 +34,5 @@ class StorageImplementation(StorageInterface):
 
     def update_password(self, user_id: int, password: str):
         user = User.objects.get(id=user_id)
-        user.set_password(user.password)
+        user.make_password(password)
         user.save()
