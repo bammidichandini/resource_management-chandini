@@ -1,6 +1,6 @@
-from resource_management.models.user import User
-from resource_management.storages.authentication_storage import StorageImplementation
-from resource_management.exceptions.exceptions import InvalidUserException
+from user_auth.models.user import User
+from user_auth.storages.authentication_storage import StorageImplementation
+from user_auth.exceptions.exceptions import InvalidUserException
 import pytest
 
 @pytest.mark.django_db()

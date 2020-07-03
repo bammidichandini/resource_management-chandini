@@ -6,14 +6,12 @@ from common.dtos import (
     RefreshTokenDTO,
     Application
     )
-from resource_management.dtos.dtos \
+from user_auth.dtos.dtos \
     import (
-        ResourceDto, RequestDto, ItemDto, UserDto, userdto, RequestsDto,
-        RegisterUserDto, IndividualUserRequestsDto, GetUserRequestsDto,
-        getuserrequestsdto, Itemdto
+        userdto,
+        RegisterUserDto
     )
-from resource_management.constants.enums import AccessLevel
-from resource_management.constants.enums import TimeFormat
+from user_auth.constants.enums import TimeFormat
 
 format = TimeFormat.FORMAT.value
 

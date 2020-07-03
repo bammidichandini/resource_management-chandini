@@ -51,11 +51,14 @@ def test_login(user_auth_tokens_dto,
         )
 
     #assert
-    assert access_token_obj["access_token"]["user_id"] == login_response["access_token"]["user_id"]
-    assert access_token_obj["role"] == login_response["role"]
-    assert access_token_obj["access_token"]["access_token"] == login_response["access_token"]["access_token"]
-    assert access_token_obj["access_token"]["expires_in"] == login_response["access_token"]["expires_in"]
-    assert access_token_obj["access_token"]["refresh_token"] == login_response["access_token"]["refresh_token"]
+
+    print(access_token_obj)
+
+    assert access_token_obj[0]["access_token"]["user_id"] == login_response["access_token"]["user_id"]
+    assert access_token_obj[0]["role"] == login_response["role"]
+    assert access_token_obj[0]["access_token"]["access_token"] == login_response["access_token"]["access_token"]
+    assert access_token_obj[0]["access_token"]["expires_in"] == login_response["access_token"]["expires_in"]
+    assert access_token_obj[0]["access_token"]["refresh_token"] == login_response["access_token"]["refresh_token"]
     storage.validate_username.assert_called_once_with(username=username)
     storage.validate_password.assert_called_once_with(
         username=username,

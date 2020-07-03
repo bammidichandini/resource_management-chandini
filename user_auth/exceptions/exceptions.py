@@ -15,3 +15,6 @@ class InvalidIdException(Exception):
 
 class UserAlreadyExistedException(Exception):
     pass
+
+class UserCannotManipulateException(Exception):
+    pass

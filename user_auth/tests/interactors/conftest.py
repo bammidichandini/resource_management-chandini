@@ -51,7 +51,7 @@ def user_auth_tokens_dto():
     user_auth_tokens_dto = UserAuthTokensDTO(
         user_id=1,
         access_token="12345",
-        refresh_token="56789",
+        refresh_token="12345",
         expires_in=datetime.datetime(2019, 4, 22, 0, 0)
     )
 
@@ -93,11 +93,11 @@ def create_users1():
     ]
 
     for user in users:
-        User.objects.create(
+        User.objects.create_user(
             username=user["username"],
             name=user["name"],
             is_admin=user["is_admin"],
-            password=make_password(user["password"]),
+            password=user["password"],
             department=user["department"],
             job_role=user["job_role"]
             ),
@@ -106,6 +106,7 @@ def create_users1():
 @pytest.fixture()
 def update_user_profile():
     profile = UpdateProfileDto(
+        id=1,
         name="Suman",
         email="suman@gmail.com",
         gender=Gender.Male.value,

@@ -1,6 +1,6 @@
 import pytest
-from resource_management.models import User
-from resource_management.storages.authentication_storage import StorageImplementation
+from user_auth.models import User
+from user_auth.storages.authentication_storage import StorageImplementation
 
 
 @pytest.mark.django_db
