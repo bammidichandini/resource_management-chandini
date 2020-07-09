@@ -18,7 +18,8 @@ from django_swagger_utils.drf_server.utils.general.import_app_settings import \
 
 THIRD_PARTY_APPS = []
 APPS = [
-    "resource_management"
+    # "resource_management"
+    "gyaan"
 ]
 
 INSTALLED_APPS += THIRD_PARTY_APPS
@@ -61,7 +62,8 @@ SWAGGER_UTILS = {
         }
     },
     "APPS": {
-        "resource_management": {}
+        # "resource_management": {}
+        "gyaan": {}
     },
     "HOST": os.environ.get('APIGATEWAY_ENDPOINT', '127.0.0.1:8000'),
 }
@@ -69,8 +71,10 @@ SWAGGER_UTILS = {
 API_KEY_AUTHENTICATION_CLASS = \
     "ib_miniprojects_backend.common.authentication.APIKeyAuthentication"
 
+from gyaan.models.user import User
+
 CUSTOM_EXCEPTIONS_TO_LOG_IN_SENTRY = []
-AUTH_USER_MODEL = 'resource_management.User'
+AUTH_USER_MODEL = 'gyaan.User'
 DEFAULT_OAUTH_APPLICATION_NAME = "resource_management"
 DEFAULT_OAUTH_CLIENT_ID = ""
 DEFAULT_OAUTH_CLIENT_SECRET = ""
