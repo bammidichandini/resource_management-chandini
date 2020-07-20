@@ -1,0 +1,9 @@
+[{
+    "model": "resource_management.User",
+    "pk": 1,
+    "fields": {
+        "firstname": "John",
+        "lastname": "Lennon",
+        "name": "John Lennon"
+    }
+}]

@@ -29,3 +29,12 @@ class RequestStatus(enum.Enum):
     Accepted = "Accepted"
     Rejected = "Rejected"
     Pending = "Pending"
+
+
+class SortByEnums(enum.Enum):
+    ASC = "ASCENDING"
+    DESC = "DESCENDING"
+
+
+
+
