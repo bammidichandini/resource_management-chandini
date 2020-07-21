@@ -5,10 +5,7 @@ from user_authentication_app.interactors.storage_interfaces.storage_interface im
 class StorageImplementation(StorageInterface):
 
     def validate_username(self, username: str):
-        # try:
-        #     User.objects.get(username=username)
-        # except User.DoesNotExist:
-        pass
+         pass
 
 
 

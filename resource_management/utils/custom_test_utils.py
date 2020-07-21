@@ -21,3 +21,4 @@ class CustomTestUtils(CustomAPITestCase):
 
     def create_resources(self):
         ResourceFactory.create_batch(size=5)
+
