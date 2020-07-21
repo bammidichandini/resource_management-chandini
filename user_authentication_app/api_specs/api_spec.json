@@ -1,0 +1,155 @@
+{
+	"swagger": "2.0",
+	"host": "localhost:8080",
+	"basePath": "/api/user_auth/",
+	"info": {
+		"version": "1.0.0",
+		"title": "Simple API",
+		"description": "A simple API to learn how to write OpenAPI Specification"
+	},
+	"schemes": [
+		"http"
+	],
+	"consumes": [
+		"application/json"
+	],
+	"produces": [
+		"application/json"
+	],
+	"securityDefinitions": {
+		"oauth": {
+			"tokenUrl": "http://auth.ibtspl.com/oauth2/",
+			"flow": "password",
+			"scopes": {
+				"read": "read users",
+				"write": "create users",
+				"update": "update users",
+				"delete": "delete users"
+			},
+			"type": "oauth2"
+		}
+	},
+	"security": [],
+	"definitions": {
+		"InvalidUsername": {
+			"type": "object",
+			"properties": {
+				"response": {
+					"type": "string"
+				},
+				"http_status_code": {
+					"type": "integer",
+					"format": "INT 32"
+				},
+				"res_status": {
+					"type": "string",
+					"enum": [
+						"USER_DOES_NOT_EXIST"
+					]
+				}
+			},
+			"required": [
+				"response",
+				"http_status_code",
+				"res_status"
+			]
+		},
+		"InvalidPassword": {
+			"type": "object",
+			"properties": {
+				"response": {
+					"type": "string"
+				},
+				"http_status_code": {
+					"type": "integer",
+					"format": "INT 32"
+				},
+				"res_status": {
+					"type": "string",
+					"enum": [
+						"INVALID_PASSWORD"
+					]
+				}
+			},
+			"required": [
+				"response",
+				"http_status_code",
+				"res_status"
+			]
+		},
+		"UserLoginDefinition": {
+			"type": "object",
+			"properties": {
+				"username": {
+					"type": "string"
+				},
+				"password": {
+					"type": "string"
+				}
+			},
+			"required": [
+				"username",
+				"password"
+			]
+		}
+	},
+	"parameters": {
+		"UserLoginCredentials": {
+			"description": "User Login",
+			"in": "body",
+			"name": "user_login",
+			"required": true,
+			"schema": {
+				"$ref": "#/definitions/UserLoginDefinition"
+			}
+		}
+	},
+	"responses": {
+		"SuccessResponse": {
+			"description": "success response"
+		},
+		"InvalidUsernameResponse": {
+			"description": "UnAuthorised",
+			"schema": {
+				"$ref": "#/definitions/InvalidUsername"
+			}
+		},
+		"InvalidPasswordResponse": {
+			"description": "Not Found",
+			"schema": {
+				"$ref": "#/definitions/InvalidPassword"
+			}
+		}
+	},
+	"paths": {
+		"/login/v1/": {
+			"post": {
+				"summary": "User Login",
+				"description": "User can login with username and password.",
+				"operationId": "user_login",
+				"security": [{
+					"oauth": [
+						"read"
+					]
+				}],
+				"parameters": [{
+					"$ref": "#/parameters/UserLoginCredentials"
+				}],
+				"responses": {
+					"200": {
+							"$ref": "#/responses/SuccessResponse"
+
+					},
+					"401": {
+						"$ref": "#/responses/InvalidUsernameResponse"
+
+					},
+					"404": {
+						"$ref": "#/responses/InvalidPasswordResponse"
+
+					}
+				}
+			}
+		}
+	}
+}
